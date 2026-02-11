@@ -1,0 +1,73 @@
+package com.bankapp.service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.bankapp.dto.request.ApprovalRequest;
+import com.bankapp.dto.response.PendingApprovalResponse;
+import com.bankapp.dto.response.TransactionResponse;
+import com.bankapp.entities.Account;
+import com.bankapp.entities.Transaction;
+import com.bankapp.enums.ApprovalStatus;
+import com.bankapp.mapper.ApprovalMapper;
+import com.bankapp.mapper.TransactionMapper;
+import com.bankapp.repo.AccountRepository;
+import com.bankapp.repo.TransactionRepository;
+
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+
+@Service
+@Transactional
+@AllArgsConstructor
+public class ApprovalService {
+	private final TransactionRepository transactionRepository;
+	private final AccountRepository accountRepository;
+	private final ApprovalMapper approvalMapper;
+	private final TransactionMapper transactionMapper;
+
+	public TransactionResponse approveWithdrawal(ApprovalRequest request) {
+		Transaction transaction = transactionRepository.findById(request.getTransactionId())
+				.orElseThrow(() -> new IllegalArgumentException("Transaction not found"));
+
+		if (transaction.getApprovalStatus() != ApprovalStatus.PENDING_APPROVAL) {
+			throw new IllegalStateException("Transaction is not pending for approval");
+		}
+
+		Account account = transaction.getAccount();
+
+		if (account.getBalance().compareTo(transaction.getAmount()) < 0) {
+			throw new IllegalStateException("Insufficient balance");
+		}
+
+		transaction.approve(request.getManagerId());
+		account.debit(transaction.getAmount());
+
+		accountRepository.save(account);
+		transactionRepository.save(transaction);
+
+		return transactionMapper.toTransactionResponse(transaction);
+	}
+
+	public TransactionResponse rejectWithdrawal(ApprovalRequest request) {
+		Transaction transaction = transactionRepository.findById(request.getTransactionId())
+				.orElseThrow(() -> new IllegalArgumentException("Transaction not found"));
+
+		if (transaction.getApprovalStatus() != ApprovalStatus.PENDING_APPROVAL) {
+			throw new IllegalStateException("Transaction is not pending for approval");
+		}
+
+		transaction.reject(request.getManagerId());
+		transactionRepository.save(transaction);
+
+		return transactionMapper.toTransactionResponse(transaction);
+	}
+
+	public List<PendingApprovalResponse> getPendingApprovals() {
+		List<Transaction> pendingTransactions = transactionRepository
+				.findByApprovalStatus(ApprovalStatus.PENDING_APPROVAL);
+		return pendingTransactions.stream().map(approvalMapper::toPendingApprovalResponse).collect(Collectors.toList());
+	}
+}

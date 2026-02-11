@@ -1,0 +1,20 @@
+package com.bankapp.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+import com.bankapp.dto.request.CreateUserRequest;
+import com.bankapp.dto.response.UserResponse;
+import com.bankapp.entities.User;
+
+
+@Mapper(componentModel = "spring")
+public interface UserMapper {
+
+    UserResponse toResponse(User user);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "active", constant = "true")
+    User toEntity(CreateUserRequest request);
+}

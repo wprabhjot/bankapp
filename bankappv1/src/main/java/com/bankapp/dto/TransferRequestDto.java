@@ -1,0 +1,24 @@
+package com.bankapp.dto;
+
+import java.math.BigDecimal;
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class TransferRequestDto {
+	@NotNull(message = "Source account ID is required")
+	private String senderAccountId;
+	@NotNull(message = "Target account ID is required")
+	private String receiverAccountId;
+	@NotNull(message = "Transfer amount is required")
+	@Positive(message = "Transfer amount must be positive")
+	private BigDecimal amount;
+}
