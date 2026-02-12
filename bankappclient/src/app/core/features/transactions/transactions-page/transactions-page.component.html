@@ -1,0 +1,18 @@
+<div class="transactions-page">
+
+  <!-- Mini Navbar -->
+  <mat-toolbar color="primary" class="mini-navbar">
+    <span class="title">Transactions</span>
+    <span class="spacer"></span>
+    <button mat-button *ngFor="let tab of transactionTabs" (click)="navigate(tab.path)">
+      <mat-icon>{{ tab.icon }}</mat-icon>
+      {{ tab.label }}
+    </button>
+  </mat-toolbar>
+
+  <!-- Content area -->
+  <div class="transactions-content">
+    <router-outlet></router-outlet>
+  </div>
+
+</div>

@@ -1,0 +1,31 @@
+<div class="accounts-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1>Accounts Management</h1>
+      <p>Manage customer accounts, create new accounts, and monitor account details.</p>
+    </div>
+  </div>
+
+  <!-- Mini Navigation -->
+  <div class="mini-nav">
+    <a routerLink="create"
+       routerLinkActive="active-tab"
+       class="nav-tab">
+      Create Account
+    </a>
+
+    <a routerLink="list"
+       routerLinkActive="active-tab"
+       class="nav-tab">
+      Account List
+    </a>
+  </div>
+
+  <!-- Feature Content -->
+  <div class="feature-card">
+    <router-outlet></router-outlet>
+  </div>
+
+</div>

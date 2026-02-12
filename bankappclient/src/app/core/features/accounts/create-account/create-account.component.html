@@ -1,0 +1,56 @@
+<div class="create-account-container">
+  <h2>Create New Bank Account</h2>
+
+  <form [formGroup]="accountForm" (ngSubmit)="submit()">
+    <div class="form-group">
+      <label for="name">Full Name</label>
+      <input id="name" formControlName="name" placeholder="Enter name" />
+      <span *ngIf="accountForm.get('name')?.touched && accountForm.get('name')?.invalid">
+        Name is required
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input id="email" formControlName="email" placeholder="Enter email" />
+      <span *ngIf="accountForm.get('email')?.touched && accountForm.get('email')?.errors?.['required']">
+        Email is required
+      </span>
+      <span *ngIf="accountForm.get('email')?.touched && accountForm.get('email')?.errors?.['email']">
+        Enter a valid email
+      </span>
+      <span *ngIf="accountForm.get('email')?.errors?.['serverError']">
+        {{ accountForm.get('email')?.errors?.['serverError'] }}
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="phone">Phone</label>
+      <input id="phone" formControlName="phone" placeholder="10-digit phone number" />
+      <span *ngIf="accountForm.get('phone')?.touched && accountForm.get('phone')?.errors?.['required']">
+        Phone is required
+      </span>
+      <span *ngIf="accountForm.get('phone')?.touched && accountForm.get('phone')?.errors?.['pattern']">
+        Phone must be 10 digits
+      </span>
+      <span *ngIf="accountForm.get('phone')?.errors?.['serverError']">
+        {{ accountForm.get('phone')?.errors?.['serverError'] }}
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="balance">Initial Balance</label>
+      <input id="balance" type="number" formControlName="balance" />
+      <span *ngIf="accountForm.get('balance')?.touched && accountForm.get('balance')?.errors?.['required']">
+        Balance is required
+      </span>
+      <span *ngIf="accountForm.get('balance')?.touched && accountForm.get('balance')?.errors?.['min']">
+        Balance must be 0 or more
+      </span>
+    </div>
+
+    <button type="submit" [disabled]="isSubmitting || accountForm.invalid">
+      {{ isSubmitting ? 'Creating...' : 'Create Account' }}
+    </button>
+  </form>
+</div>

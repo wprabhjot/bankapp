@@ -1,0 +1,34 @@
+<div class="deposit-container">
+  <h2>Deposit Funds</h2>
+
+  <form [formGroup]="depositForm" (ngSubmit)="onSubmit()">
+    <!-- Account Selection -->
+    <label for="accountId">Select Account:</label>
+    <select formControlName="accountId" id="accountId">
+      <option value="">-- Select Account --</option>
+      <option *ngFor="let acc of accounts" [value]="acc.id">
+        {{ acc.name }} ({{ acc.id }})
+      </option>
+    </select>
+
+    <div *ngIf="depositForm.get('accountId')?.invalid && depositForm.get('accountId')?.touched" class="error">
+      Account is required.
+    </div>
+
+    <!-- Amount Input -->
+    <label for="amount">Amount:</label>
+    <input type="number" formControlName="amount" id="amount" placeholder="Enter amount" />
+    <div *ngIf="depositForm.get('amount')?.invalid && depositForm.get('amount')?.touched" class="error">
+      Amount is required and must be greater than 0.
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" [disabled]="isSubmitting || depositForm.invalid">
+      {{ isSubmitting ? 'Submitting...' : 'Deposit' }}
+    </button>
+  </form>
+
+  <!-- Success / Error Messages -->
+  <div *ngIf="successMessage" class="success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+</div>

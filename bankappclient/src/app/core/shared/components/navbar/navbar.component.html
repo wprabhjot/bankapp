@@ -1,0 +1,35 @@
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a routerLink="/">BankApp</a>
+  </div>
+
+  <ul class="navbar-links">
+    <li *ngIf="!isLoggedIn()">
+      <a routerLink="/login">Login</a>
+    </li>
+
+    <li *ngIf="isLoggedIn()">
+      <a routerLink="/dashboard">Dashboard</a>
+    </li>
+
+    <li>
+      <a routerLink="/accounts">Accounts</a>
+    </li>
+
+    <!-- Admin-only link -->
+    <li *ngIf="hasRole(Role.ROLE_MANAGER)">
+      <a routerLink="/approvals">Approvals</a>
+    </li>
+
+    <!-- User-only link -->
+    <li *ngIf="isLoggedIn()">
+      <a routerLink="/transactions">Transactions</a>
+    </li>
+
+    <!-- Common logout button -->
+    <li *ngIf="isLoggedIn()">
+      <span class="username">Hello, {{ getUsername() }}</span>
+      <button (click)="logout()">Logout</button>
+    </li>
+  </ul>
+</nav>

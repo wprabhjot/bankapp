@@ -1,0 +1,47 @@
+.transaction-list-container {
+  padding: 20px;
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+select {
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+.loading {
+  margin-top: 10px;
+  color: #007bff;
+}
+
+.error {
+  margin-top: 10px;
+  color: red;
+}
+
+.no-data {
+  margin-top: 10px;
+  font-style: italic;
+}
+
+.transaction-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.transaction-table th, .transaction-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.transaction-table th {
+  background-color: #f2f2f2;
+}

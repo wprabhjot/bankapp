@@ -1,0 +1,47 @@
+<div class="dashboard-container">
+  <h1>Dashboard</h1>
+
+  <!-- Statistics Cards -->
+  <div class="stats-cards">
+    <div class="card">
+      <h3>Total Accounts</h3>
+      <p>{{ totalAccounts || 0 }}</p>
+    </div>
+    <div class="card">
+      <h3>Total Transactions</h3>
+      <p>{{ totalTransactions || 0 }}</p>
+    </div>
+  </div>
+
+  <!-- Recent Transactions -->
+  <div class="transactions-section">
+    <h2>Recent Transactions</h2>
+    <table *ngIf="recentTransactions && recentTransactions.length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Account</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Amount</th>
+          <th>Performed By</th>
+          <th>Approved By</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let txn of recentTransactions">
+          <td>{{ txn.id }}</td>
+          <td>{{ txn.accountName }} ({{ txn.accountId }})</td>
+          <td>{{ txn.type }}</td>
+          <td>{{ txn.approvalStatus }}</td>
+          <td>{{ txn.amount | currency }}</td>
+          <td>{{ txn.performedBy }}</td>
+          <td>{{ txn.approvedBy || '-' }}</td>
+          <td>{{ txn.createdAt | date:'short' }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p *ngIf="!recentTransactions || recentTransactions.length === 0">No recent transactions.</p>
+  </div>
+</div>

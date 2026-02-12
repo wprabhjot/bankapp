@@ -1,0 +1,86 @@
+/* Navbar container */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #0d6efd; /* Bootstrap primary color */
+  padding: 0.5rem 1rem;
+  color: #fff;
+  font-family: Arial, sans-serif;
+}
+
+/* Brand/logo */
+.navbar-brand a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Navbar links container */
+.navbar-links {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+/* Individual links */
+.navbar-links li a {
+  color: #fff;
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.navbar-links li a:hover {
+  background-color: #fff;
+  color: #0d6efd;
+  border-radius: 4px;
+}
+
+/* Username display */
+.username {
+  margin-right: 0.5rem;
+  font-weight: bold;
+}
+
+/* Logout button */
+.navbar-links li button {
+  background-color: #dc3545; /* Bootstrap danger color */
+  color: #fff;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.navbar-links li button:hover {
+  background-color: #c82333;
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navbar-links {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .navbar-links li {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .navbar-links li a,
+  .navbar-links li button {
+    width: 100%;
+    text-align: left;
+  }
+}

@@ -1,0 +1,47 @@
+<div class="transaction-list-container">
+  <h2>Transactions</h2>
+
+  <div class="form-group">
+    <label for="accountSelect">Select Account:</label>
+    <select id="accountSelect" [(ngModel)]="selectedAccountId" (change)="onAccountChange()">
+      <option value="">-- Select an Account --</option>
+      <option *ngFor="let account of accounts" [value]="account.id">
+        {{ account.name }} ({{ account.id }})
+      </option>
+    </select>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading transactions...</div>
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <table *ngIf="transactions.length > 0" class="transaction-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Amount</th>
+        <th>Performed By</th>
+        <th>Approved By</th>
+        <th>Account Name</th>
+        <th>Created At</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let tx of transactions">
+        <td>{{ tx.id }}</td>
+        <td>{{ tx.type }}</td>
+        <td>{{ tx.approvalStatus }}</td>
+        <td>{{ tx.amount | currency }}</td>
+        <td>{{ tx.performedBy }}</td>
+        <td>{{ tx.approvedBy || '-' }}</td>
+        <td>{{ tx.accountName }}</td>
+        <td>{{ tx.createdAt | date:'short' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && transactions.length === 0 && selectedAccountId" class="no-data">
+    No transactions found for this account.
+  </div>
+</div>

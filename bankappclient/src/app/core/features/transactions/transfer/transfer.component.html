@@ -1,0 +1,45 @@
+<div class="transfer-container">
+  <h2>Transfer Funds</h2>
+
+  <form [formGroup]="transferForm" (ngSubmit)="onSubmit()">
+    <!-- From Account -->
+    <label for="senderAccountId">From Account:</label>
+    <select formControlName="senderAccountId" id="senderAccountId">
+      <option value="">-- Select Account --</option>
+      <option *ngFor="let acc of accounts" [value]="acc.id">
+        {{ acc.name }} ({{ acc.id }})
+      </option>
+    </select>
+    <div *ngIf="transferForm.get('senderAccountId')?.invalid && transferForm.get('senderAccountId')?.touched" class="error">
+      Sender account is required.
+    </div>
+
+    <!-- To Account -->
+    <label for="receiverAccountId">To Account:</label>
+    <select formControlName="receiverAccountId" id="receiverAccountId">
+      <option value="">-- Select Account --</option>
+      <option *ngFor="let acc of accounts" [value]="acc.id">
+        {{ acc.name }} ({{ acc.id }})
+      </option>
+    </select>
+    <div *ngIf="transferForm.get('receiverAccountId')?.invalid && transferForm.get('receiverAccountId')?.touched" class="error">
+      Receiver account is required.
+    </div>
+
+    <!-- Amount -->
+    <label for="amount">Amount:</label>
+    <input type="number" formControlName="amount" id="amount" placeholder="Enter amount" />
+    <div *ngIf="transferForm.get('amount')?.invalid && transferForm.get('amount')?.touched" class="error">
+      Amount is required and must be greater than 0.
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" [disabled]="isSubmitting || transferForm.invalid">
+      {{ isSubmitting ? 'Transferring...' : 'Transfer' }}
+    </button>
+  </form>
+
+  <!-- Messages -->
+  <div *ngIf="successMessage" class="success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+</div>

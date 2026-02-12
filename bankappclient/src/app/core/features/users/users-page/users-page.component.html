@@ -1,0 +1,35 @@
+<div class="users-container">
+
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1>User Administration</h1>
+      <p>Manage system users, assign roles, and control access permissions.</p>
+    </div>
+
+    <div class="header-badge">
+      <span class="badge">Manager Access</span>
+    </div>
+  </div>
+
+  <!-- Mini Navigation Tabs -->
+  <div class="mini-nav">
+    <a routerLink="create"
+       routerLinkActive="active-tab"
+       class="nav-tab">
+      Create User
+    </a>
+
+    <a routerLink="list"
+       routerLinkActive="active-tab"
+       class="nav-tab">
+      User List
+    </a>
+  </div>
+
+  <!-- Content Card -->
+  <div class="feature-card">
+    <router-outlet></router-outlet>
+  </div>
+
+</div>

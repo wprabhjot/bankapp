@@ -1,0 +1,134 @@
+/* Sidebar Container */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 240px;
+  background-color: #ffffff;
+  color: #1f2937;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-shadow: 4px 0 20px rgba(0,0,0,0.08);
+  transition: width 0.4s ease, background-color 0.3s ease;
+  z-index: 1000;
+  border-right: 1px solid #e5e7eb;
+}
+
+/* Collapsed Sidebar */
+.sidebar.collapsed {
+  width: 70px;
+}
+
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.brand {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.welcome {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-top: 5px;
+}
+
+/* Collapse Button */
+.collapse-btn {
+  position: absolute;
+  top: 0;
+  right: -15px;
+  background-color: #2563eb;
+  border: none;
+  color: #fff;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.collapse-btn:hover {
+  transform: scale(1.1);
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.sidebar-menu li {
+  margin-bottom: 15px;
+}
+
+.sidebar-menu li a {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px 15px;
+  color: #1f2937;
+  font-weight: 500;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.sidebar-menu li a:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.sidebar-menu li a.active {
+  background-color: #2563eb;
+  color: #fff;
+}
+
+.sidebar-menu li a .material-icons {
+  font-size: 1.5rem;
+}
+
+/* Logout Styling */
+.sidebar-menu li.logout a {
+  color: #ef4444;
+}
+
+.sidebar-menu li.logout a:hover {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Hide text when collapsed */
+.sidebar.collapsed .sidebar-menu li a span:not(.material-icons) {
+  display: none;
+}
+
+/* Optional: hover tooltip for collapsed sidebar */
+.sidebar.collapsed .sidebar-menu li a {
+  justify-content: center;
+  position: relative;
+}
+
+.sidebar.collapsed .sidebar-menu li a:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 80px;
+  background-color: #111827;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  z-index: 10;
+}

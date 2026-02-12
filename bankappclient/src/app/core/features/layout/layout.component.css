@@ -1,0 +1,17 @@
+.layout-body {
+  display: flex;
+  height: calc(100vh - 60px); /* Assuming navbar height is 60px */
+}
+
+/* Sidebar styles are in sidebar.component.css */
+.content {
+  flex: 1;
+  padding: 20px;
+  background-color: #f5f6fa;
+  transition: margin-left 0.3s ease;
+}
+
+/* When sidebar is collapsed, main content takes more space */
+.content.collapsed {
+  margin-left: 60px; /* Match collapsed sidebar width */
+}

@@ -1,0 +1,38 @@
+<div class="pending-approvals-container">
+  <h2>Pending Approvals</h2>
+
+  <div *ngIf="loading">Loading...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <table *ngIf="pendingApprovals.length > 0">
+    <thead>
+      <tr>
+        <th>Transaction ID</th>
+        <th>Account Name</th>
+        <th>Amount</th>
+        <th>Type</th>
+        <th>Performed By</th>
+        <th>Created At</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let tx of pendingApprovals">
+        <td>{{ tx.transactionId }}</td>
+        <td>{{ tx.accountName }}</td>
+        <td>{{ tx.amount | currency }}</td>
+        <td>{{ tx.transactionType }}</td>
+        <td>{{ tx.performedByUserId }}</td>
+        <td>{{ tx.createdAt | date: 'short' }}</td>
+        <td>
+          <button (click)="approve(tx.transactionId)" class="approve-btn">Approve</button>
+          <button (click)="reject(tx.transactionId)" class="reject-btn">Reject</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && pendingApprovals.length === 0">
+    No pending approvals found.
+  </div>
+</div>
