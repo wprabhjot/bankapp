@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.bankapp.exceptions.BankAccountAlreadyExistsException;
 import com.bankapp.exceptions.BankAccountNotFoundException;
 
 @RestControllerAdvice
@@ -24,7 +25,19 @@ public class BankAccountExceptionHandlerController {
 
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
 	}
-	
+
+	@ExceptionHandler(BankAccountAlreadyExistsException.class)
+	public ResponseEntity<ProblemDetail> handleConflict(BankAccountAlreadyExistsException e) {
+		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+
+		problemDetail.setTitle("Account Already Exists");
+		problemDetail.setDetail(e.getMessage());
+		problemDetail.setProperty("timestamp", Instant.now());
+		problemDetail.setProperty("errorCode", "ACCOUNT_EXISTS");
+
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
+	}
+
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<ProblemDetail> handle500(RuntimeException e) {
 		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);

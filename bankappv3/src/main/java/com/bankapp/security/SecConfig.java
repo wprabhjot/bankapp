@@ -15,6 +15,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.config.Customizer;
 
 @Configuration
 @EnableWebSecurity(debug = true) // Spring sec aop
@@ -31,7 +32,7 @@ public class SecConfig {
 
         http
             .csrf(AbstractHttpConfigurer::disable)
-            .cors(AbstractHttpConfigurer::disable)
+            .cors(Customizer.withDefaults())
 
             .authorizeHttpRequests(auth -> auth
             	    .requestMatchers("/authenticate").permitAll()

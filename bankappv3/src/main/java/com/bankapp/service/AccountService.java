@@ -2,6 +2,7 @@ package com.bankapp.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import com.bankapp.dto.request.UpdateAccountDetailsRequest;
 import com.bankapp.dto.response.AccountResponse;
 import com.bankapp.entities.Account;
 import com.bankapp.enums.AccountStatus;
+import com.bankapp.exceptions.BankAccountAlreadyExistsException;
 import com.bankapp.exceptions.BankAccountNotFoundException;
 import com.bankapp.mapper.AccountMapper;
 import com.bankapp.repo.AccountRepository;
@@ -20,61 +22,104 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class AccountService {
 
-	private final AccountRepository accountRepository;
-	private final AccountMapper accountMapper;
+    private final AccountRepository accountRepository;
+    private final AccountMapper accountMapper;
 
-	public AccountService(AccountRepository accountRepository, AccountMapper accountMapper) {
-		this.accountRepository = accountRepository;
-		this.accountMapper = accountMapper;
-	}
+    public AccountService(AccountRepository accountRepository, AccountMapper accountMapper) {
+        this.accountRepository = accountRepository;
+        this.accountMapper = accountMapper;
+    }
 
-	public AccountResponse createAccount(AccountRequestDto request) {
+    public AccountResponse createAccount(AccountRequestDto request) {
 
-		if (request.getBalance().compareTo(BigDecimal.ZERO) < 0) {
-			throw new IllegalArgumentException("Initial balance cannot be negative");
-		}
+        validateNewAccount(request);
 
-		Account account = accountMapper.toEntity(request);
-		Account savedAccount = accountRepository.save(account);
+        Account account = accountMapper.toEntity(request);
+        Account savedAccount = accountRepository.save(account);
 
-		return accountMapper.toResponse(savedAccount);
-	}
+        return accountMapper.toResponse(savedAccount);
+    }
 
-	public AccountResponse updateAccountDetails(String accountId, UpdateAccountDetailsRequest request) {
+    public AccountResponse updateAccountDetails(String accountId, UpdateAccountDetailsRequest request) {
 
-		Account account = getAccountById(accountId);
+        Account account = getAccountById(accountId);
 
-		if (account.getStatus() != AccountStatus.ACTIVE) {
-			throw new IllegalArgumentException("Account is closed and cannot be updated");
-		}
+        if (account.getStatus() != AccountStatus.ACTIVE) {
+            throw new IllegalArgumentException("Account is closed and cannot be updated");
+        }
 
-		account.updateDetails(request.getName(), request.getEmail(), request.getPhone());
+        validateUpdatedAccount(accountId, request.getEmail(), request.getPhone());
 
-		Account updated = accountRepository.save(account);
-		return accountMapper.toResponse(updated);
-	}
+        account.updateDetails(request.getName(), request.getEmail(), request.getPhone());
 
-	public AccountResponse deleteAccount(String accountId) {
+        Account updated = accountRepository.save(account);
+        return accountMapper.toResponse(updated);
+    }
 
-		Account account = getAccountById(accountId);
-		account.close();
+    public AccountResponse deleteAccount(String accountId) {
 
-		Account saved = accountRepository.save(account);
-		return accountMapper.toResponse(saved);
-	}
+        Account account = getAccountById(accountId);
 
-	public Account getAccountById(String accountId) {
-		return accountRepository.findById(accountId).orElseThrow(() -> new BankAccountNotFoundException(accountId));
-	}
+        if (account.getStatus() == AccountStatus.CLOSED) {
+            throw new IllegalArgumentException("Account is already closed");
+        }
 
-	public AccountResponse getAccountByIdResponse(String accountId) {
-		Account account = accountRepository.findById(accountId)
-				.orElseThrow(() -> new BankAccountNotFoundException(accountId));
+        account.close();
 
-		return accountMapper.toResponse(account);
-	}
+        Account saved = accountRepository.save(account);
+        return accountMapper.toResponse(saved);
+    }
 
-	public List<AccountResponse> getAllAccounts() {
-		return accountRepository.findAll().stream().map(accountMapper::toResponse).toList();
-	}
+    public Account getAccountById(String accountId) {
+        return accountRepository.findById(accountId)
+                .orElseThrow(() -> new BankAccountNotFoundException(accountId));
+    }
+
+    public AccountResponse getAccountByIdResponse(String accountId) {
+        Account account = getAccountById(accountId);
+        return accountMapper.toResponse(account);
+    }
+
+    public List<AccountResponse> getAllAccounts() {
+        return accountRepository.findAll().stream()
+                .map(accountMapper::toResponse)
+                .toList();
+    }
+
+    private void validateNewAccount(AccountRequestDto request) {
+
+        if (request.getBalance().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Initial balance cannot be negative");
+        }
+
+        Optional<Account> byEmail = accountRepository.findByEmail(request.getEmail());
+        if (byEmail.isPresent()) {
+            throw new BankAccountAlreadyExistsException(
+                    "An account with email " + request.getEmail() + " already exists");
+        }
+
+        // Check phone uniqueness
+        Optional<Account> byPhone = accountRepository.findByPhone(request.getPhone());
+        if (byPhone.isPresent()) {
+            throw new BankAccountAlreadyExistsException(
+                    "An account with phone " + request.getPhone() + " already exists");
+        }
+    }
+
+    private void validateUpdatedAccount(String accountId, String email, String phone) {
+
+        accountRepository.findByEmail(email)
+                .filter(a -> !a.getId().equals(accountId))
+                .ifPresent(a -> {
+                    throw new BankAccountAlreadyExistsException(
+                            "Another account with email " + email + " already exists");
+                });
+
+        accountRepository.findByPhone(phone)
+                .filter(a -> !a.getId().equals(accountId))
+                .ifPresent(a -> {
+                    throw new BankAccountAlreadyExistsException(
+                            "Another account with phone " + phone + " already exists");
+                });
+    }
 }
