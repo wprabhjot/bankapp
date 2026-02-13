@@ -1,0 +1,16 @@
+2026-02-13 14:44:29 [http-nio-8080-exec-3] INFO  com.bankapp.logging.status - ➡️ Entering method: AccountService.getAllAccounts with arguments: []
+2026-02-13 14:44:29 [http-nio-8080-exec-3] INFO  com.bankapp.logging.status - ✅ Method executed successfully: AccountService.getAllAccounts
+2026-02-13 14:44:29 [http-nio-8080-exec-4] INFO  com.bankapp.logging.status - ➡️ Entering method: AccountService.getAllAccounts with arguments: []
+2026-02-13 14:44:29 [http-nio-8080-exec-4] INFO  com.bankapp.logging.status - ✅ Method executed successfully: AccountService.getAllAccounts
+2026-02-13 14:46:39 [http-nio-8080-exec-3] INFO  com.bankapp.logging.status - ➡️ Entering method: AccountService.getAllAccounts with arguments: []
+2026-02-13 14:46:39 [http-nio-8080-exec-3] INFO  com.bankapp.logging.status - ✅ Method executed successfully: AccountService.getAllAccounts
+2026-02-13 14:46:51 [http-nio-8080-exec-8] INFO  com.bankapp.logging.status - ➡️ Entering method: AccountService.getAllAccounts with arguments: []
+2026-02-13 14:46:51 [http-nio-8080-exec-8] INFO  com.bankapp.logging.status - ✅ Method executed successfully: AccountService.getAllAccounts
+2026-02-13 14:47:26 [http-nio-8080-exec-5] INFO  com.bankapp.logging.status - ➡️ Entering method: AccountService.getAllAccounts with arguments: []
+2026-02-13 14:47:26 [http-nio-8080-exec-5] INFO  com.bankapp.logging.status - ✅ Method executed successfully: AccountService.getAllAccounts
+2026-02-13 14:47:57 [http-nio-8080-exec-10] INFO  com.bankapp.logging.status - ➡️ Entering method: AccountService.createAccount with arguments: [AccountRequestDto(name=account8, email=account8@gmail.com, phone=9843328913, balance=1200)]
+2026-02-13 14:47:57 [http-nio-8080-exec-10] INFO  com.bankapp.logging.status - ✅ Method executed successfully: AccountService.createAccount
+2026-02-13 14:47:59 [http-nio-8080-exec-1] INFO  com.bankapp.logging.status - ➡️ Entering method: AccountService.getAllAccounts with arguments: []
+2026-02-13 14:47:59 [http-nio-8080-exec-1] INFO  com.bankapp.logging.status - ✅ Method executed successfully: AccountService.getAllAccounts
+2026-02-13 14:48:02 [http-nio-8080-exec-7] INFO  com.bankapp.logging.status - ➡️ Entering method: AccountService.getAllAccounts with arguments: []
+2026-02-13 14:48:02 [http-nio-8080-exec-7] INFO  com.bankapp.logging.status - ✅ Method executed successfully: AccountService.getAllAccounts

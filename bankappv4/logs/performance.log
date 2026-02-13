@@ -1,0 +1,8 @@
+2026-02-13 14:44:29 [http-nio-8080-exec-3] INFO  com.bankapp.logging.performance - ✅ Method executed: AccountService.getAllAccounts | Execution time: 33 ms
+2026-02-13 14:44:29 [http-nio-8080-exec-4] INFO  com.bankapp.logging.performance - ✅ Method executed: AccountService.getAllAccounts | Execution time: 7 ms
+2026-02-13 14:46:39 [http-nio-8080-exec-3] INFO  com.bankapp.logging.performance - ✅ Method executed: AccountService.getAllAccounts | Execution time: 6 ms
+2026-02-13 14:46:51 [http-nio-8080-exec-8] INFO  com.bankapp.logging.performance - ✅ Method executed: AccountService.getAllAccounts | Execution time: 6 ms
+2026-02-13 14:47:26 [http-nio-8080-exec-5] INFO  com.bankapp.logging.performance - ✅ Method executed: AccountService.getAllAccounts | Execution time: 5 ms
+2026-02-13 14:47:57 [http-nio-8080-exec-10] INFO  com.bankapp.logging.performance - ✅ Method executed: AccountService.createAccount | Execution time: 32 ms
+2026-02-13 14:47:59 [http-nio-8080-exec-1] INFO  com.bankapp.logging.performance - ✅ Method executed: AccountService.getAllAccounts | Execution time: 6 ms
+2026-02-13 14:48:02 [http-nio-8080-exec-7] INFO  com.bankapp.logging.performance - ✅ Method executed: AccountService.getAllAccounts | Execution time: 7 ms

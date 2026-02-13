@@ -1,0 +1,53 @@
+package com.bankapp.controller;
+
+import java.time.Instant;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.bankapp.exceptions.BankAccountAlreadyExistsException;
+import com.bankapp.exceptions.BankAccountNotFoundException;
+
+@RestControllerAdvice
+public class BankAccountExceptionHandlerController {
+
+	@ExceptionHandler(BankAccountNotFoundException.class)
+	public ResponseEntity<ProblemDetail> handle404(BankAccountNotFoundException e) {
+		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+
+		problemDetail.setTitle("Account Not Found");
+		problemDetail.setDetail(e.getMessage());
+		problemDetail.setProperty("timestamp", Instant.now());
+		problemDetail.setProperty("errorCode", "NOT_FOUND");
+
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
+	}
+
+	@ExceptionHandler(BankAccountAlreadyExistsException.class)
+	public ResponseEntity<ProblemDetail> handleConflict(BankAccountAlreadyExistsException e) {
+		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+
+		problemDetail.setTitle("Account Already Exists");
+		problemDetail.setDetail(e.getMessage());
+		problemDetail.setProperty("timestamp", Instant.now());
+		problemDetail.setProperty("errorCode", "ACCOUNT_EXISTS");
+
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
+	}
+
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<ProblemDetail> handle500(RuntimeException e) {
+		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+
+		problemDetail.setTitle(e.getMessage());
+		problemDetail.setDetail("Please try after some time");
+		problemDetail.setProperty("timestamp", Instant.now());
+		problemDetail.setProperty("errorCode", "INTERNAL_SERVER_ERROR");
+
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail);
+	}
+
+}
