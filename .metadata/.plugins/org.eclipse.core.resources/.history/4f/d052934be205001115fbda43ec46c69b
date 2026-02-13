@@ -1,0 +1,9 @@
+package com.bankapp.dto;
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UpdateAccountNameRequest {
+
+    @NotBlank
+    private String name;
+}

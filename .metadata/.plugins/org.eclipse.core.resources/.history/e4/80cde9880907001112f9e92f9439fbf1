@@ -1,0 +1,56 @@
+package com.bankapp.mapper;
+
+import com.bankapp.dto.request.AccountRequestDto;
+import com.bankapp.dto.response.AccountResponse;
+import com.bankapp.entities.Account;
+import java.math.BigDecimal;
+import javax.annotation.processing.Generated;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    date = "2026-02-10T22:41:31+0530",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.12 (Oracle Corporation)"
+)
+@Component
+public class AccountMapperImpl implements AccountMapper {
+
+    @Override
+    public AccountResponse toResponse(Account account) {
+        if ( account == null ) {
+            return null;
+        }
+
+        AccountResponse accountResponse = new AccountResponse();
+
+        accountResponse.setId( account.getId() );
+        accountResponse.setName( account.getName() );
+        accountResponse.setEmail( account.getEmail() );
+        accountResponse.setPhone( account.getPhone() );
+        accountResponse.setBalance( account.getBalance() );
+        accountResponse.setStatus( account.getStatus() );
+
+        return accountResponse;
+    }
+
+    @Override
+    public Account toEntity(AccountRequestDto request) {
+        if ( request == null ) {
+            return null;
+        }
+
+        String name = null;
+        String email = null;
+        String phone = null;
+        BigDecimal balance = null;
+
+        name = request.getName();
+        email = request.getEmail();
+        phone = request.getPhone();
+        balance = request.getBalance();
+
+        Account account = new Account( name, email, phone, balance );
+
+        return account;
+    }
+}

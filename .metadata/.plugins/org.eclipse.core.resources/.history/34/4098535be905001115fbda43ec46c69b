@@ -1,0 +1,18 @@
+package com.bankapp.repo;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.bankapp.entities.Transaction;
+import com.bankapp.enums.ApprovalStatus;
+
+public interface TransactionRepository extends JpaRepository<Transaction, String> {
+	@Query("SELECT t FROM Transaction t JOIN FETCH t.account WHERE t.account.id = :accountId")
+	List<Transaction> findByAccountId(String accountId);
+
+    List<Transaction> findByPerformedByUserId(String userId);
+
+    List<Transaction> findByApprovalStatus(ApprovalStatus approvalStatus);
+}

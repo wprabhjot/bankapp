@@ -1,0 +1,6 @@
+package com.bankapp.mapper;
+@Mapper(componentModel = "spring")
+public interface AccountMapper {
+    AccountResponse toResponse(Account account);
+    Account toEntity(AccountRequest request);
+}

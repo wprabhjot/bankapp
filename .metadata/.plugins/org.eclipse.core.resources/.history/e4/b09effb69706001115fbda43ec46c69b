@@ -1,0 +1,13 @@
+package com.bankapp.dto.request;
+
+import com.bankapp.enums.Role;
+
+import lombok.Data;
+
+@Data
+public class CreateUserRequest {
+    private String username;
+    private String password;
+    private String fullName;
+    private Role role;
+}

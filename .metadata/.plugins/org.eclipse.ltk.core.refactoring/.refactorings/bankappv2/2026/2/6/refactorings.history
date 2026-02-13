@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete element from project &apos;bankappv2&apos;&#x0D;&#x0A;- Original project: &apos;bankappv2&apos;&#x0D;&#x0A;- Original element: &apos;com.bankapp.service.Snippet.java&apos;" description="Delete element" element1="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.bankapp.service{Snippet.java" elements="1" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1770479967643" subPackages="false" version="1.0"/>
+</session>

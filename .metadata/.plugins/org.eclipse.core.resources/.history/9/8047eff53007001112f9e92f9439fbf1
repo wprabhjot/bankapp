@@ -1,0 +1,154 @@
+package com.bankapp.service;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import com.bankapp.dto.request.DepositRequest;
+import com.bankapp.dto.request.TransferRequest;
+import com.bankapp.dto.request.WithdrawRequest;
+import com.bankapp.dto.response.PendingApprovalResponse;
+import com.bankapp.dto.response.TransactionResponse;
+import com.bankapp.dto.response.TransferResponse;
+import com.bankapp.entities.Account;
+import com.bankapp.entities.Transaction;
+import com.bankapp.enums.ApprovalStatus;
+import com.bankapp.exceptions.BankAccountNotFoundException;
+import com.bankapp.mapper.TransactionMapper;
+import com.bankapp.repo.AccountRepository;
+import com.bankapp.repo.TransactionRepository;
+
+import jakarta.transaction.Transactional;
+
+@Service
+@Transactional
+public class TransactionService {
+
+	private static final BigDecimal MANAGER_APPROVAL_LIMIT = new BigDecimal("200000");
+
+	private final TransactionRepository transactionRepository;
+	private final AccountRepository accountRepository;
+	private final TransactionMapper transactionMapper;
+
+	public TransactionService(TransactionRepository transactionRepository, AccountRepository accountRepository,
+			TransactionMapper transactionMapper) {
+		this.transactionRepository = transactionRepository;
+		this.accountRepository = accountRepository;
+		this.transactionMapper = transactionMapper;
+	}
+
+	private void validateAmount(BigDecimal amount) {
+		if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new IllegalArgumentException("Amount must be greater than zero");
+		}
+	}
+
+	public TransactionResponse deposit(DepositRequest request) {
+
+		validateAmount(request.getAmount());
+
+		Account account = accountRepository.findById(request.getAccountId())
+				.orElseThrow(() -> new BankAccountNotFoundException(request.getAccountId()));
+
+		account.credit(request.getAmount());
+
+		String performedBy = getCurrentUsername();
+
+		Transaction transaction = Transaction.createDeposit(account, request.getAmount(), performedBy);
+
+		accountRepository.save(account);
+		transactionRepository.save(transaction);
+
+		return transactionMapper.toTransactionResponse(transaction);
+	}
+
+	public TransactionResponse withdraw(WithdrawRequest request) {
+		validateAmount(request.getAmount());
+		Account account = accountRepository.findById(request.getAccountId())
+				.orElseThrow(() -> new BankAccountNotFoundException(request.getAccountId()));
+
+		if (account.getBalance().compareTo(request.getAmount()) < 0) {
+			throw new IllegalStateException("Insufficient balance");
+		}
+
+		boolean requiresApproval = request.getAmount().compareTo(MANAGER_APPROVAL_LIMIT) > 0;
+		String performedBy = getCurrentUsername();
+		Transaction transaction;
+
+		if (requiresApproval) {
+			transaction = Transaction.createPendingWithdrawal(account, request.getAmount(), performedBy);
+		} else {
+			transaction = Transaction.createApprovedWithdrawal(account, request.getAmount(), performedBy);
+			account.debit(request.getAmount());
+			accountRepository.save(account);
+		}
+
+		transactionRepository.save(transaction);
+		return transactionMapper.toTransactionResponse(transaction);
+	}
+
+	public TransferResponse transfer(TransferRequest request) {
+
+		validateAmount(request.getAmount());
+
+		if (request.getSenderAccountId().equals(request.getReceiverAccountId())) {
+			throw new IllegalArgumentException("Source and target accounts cannot be the same");
+		}
+
+		Account sender = accountRepository.findById(request.getSenderAccountId())
+				.orElseThrow(() -> new BankAccountNotFoundException(request.getSenderAccountId()));
+
+		Account receiver = accountRepository.findById(request.getReceiverAccountId())
+				.orElseThrow(() -> new BankAccountNotFoundException(request.getReceiverAccountId()));
+
+		if (sender.getBalance().compareTo(request.getAmount()) < 0) {
+			throw new IllegalStateException("Insufficient balance in sender account");
+		}
+		
+		String performedBy = getCurrentUsername();
+
+		sender.debit(request.getAmount());
+		receiver.credit(request.getAmount());
+
+		accountRepository.save(sender);
+		accountRepository.save(receiver);
+
+		Transaction debitTx = Transaction.createTransferDebit(sender, request.getAmount(),
+				performedBy, receiver.getId());
+
+		Transaction creditTx = Transaction.createTransferCredit(receiver, request.getAmount(),
+				performedBy, sender.getId());
+
+		transactionRepository.save(debitTx);
+		transactionRepository.save(creditTx);
+
+		return new TransferResponse(sender.getId(), sender.getName(), receiver.getId(), receiver.getName(),
+				request.getAmount(), performedBy, debitTx.getCreatedAt());
+	}
+
+	public List<TransactionResponse> getTransactionsByAccount(String accountId) {
+
+		accountRepository.findById(accountId).orElseThrow(() -> new BankAccountNotFoundException(accountId));
+
+		return transactionRepository.findByAccountIdWithAccount(accountId).stream()
+				.map(transactionMapper::toTransactionResponse).toList();
+	}
+
+	public List<TransactionResponse> getTransactionsByClerk(String clerkUserId) {
+
+		return transactionRepository.findByPerformedByUserId(clerkUserId).stream()
+				.map(transactionMapper::toTransactionResponse).toList();
+	}
+
+	public List<PendingApprovalResponse> getPendingApprovals() {
+		return transactionRepository.findByApprovalStatus(ApprovalStatus.PENDING_APPROVAL).stream()
+				.map(transactionMapper::toPendingApprovalResponse).toList();
+	}
+
+	private String getCurrentUsername() {
+		return SecurityContextHolder.getContext().getAuthentication().getName();
+	}
+
+}

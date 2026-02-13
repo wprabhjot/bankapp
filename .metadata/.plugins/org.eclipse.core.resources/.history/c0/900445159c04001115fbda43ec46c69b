@@ -1,0 +1,61 @@
+package com.bankapp.service;
+
+import java.math.BigDecimal;
+
+import org.springframework.stereotype.Service;
+
+import com.bankapp.dto.AccountDto;
+import com.bankapp.dto.DepositRequestDto;
+import com.bankapp.dto.TransferRequestDto;
+import com.bankapp.dto.WithdrawRequestDto;
+import com.bankapp.entities.Account;
+import com.bankapp.repo.TransactionRepository;
+import com.bankapp.util.AccountConverter;
+
+
+@Service
+public class TransactionService {
+	
+	private TransactionRepository transactionRepository;
+	
+	public TransactionService(TransactionRepository transactionRepository) {
+		super();
+		this.transactionRepository = transactionRepository;
+	}
+
+	public BigDecimal deposit(DepositRequestDto depositRequestDto) {
+		System.out.println("-------------------------");
+		System.out.println(depositRequestDto.getAccountId());
+		System.out.println("-------------------------");
+
+		AccountDto accountDto = getById(depositRequestDto.getAccountId());
+		Account account = AccountConverter.convertToAccount(accountDto);
+		account.setBalance(account.getBalance().add(depositRequestDto.getAmount()));
+		bankRepo.save(account);
+		return account.getBalance();
+	}
+
+	public BigDecimal withdraw(WithdrawRequestDto withdrawRequestDto) {
+		Account account = AccountConverter.convertToAccount(getById(withdrawRequestDto.getAccountId()));
+		if (account.getBalance().compareTo(withdrawRequestDto.getAmount()) < 0) {
+			throw new IllegalArgumentException("Insufficient balance for withdrawal");
+		}
+		account.setBalance(account.getBalance().subtract(withdrawRequestDto.getAmount()));
+		bankRepo.save(account);
+		return account.getBalance();
+	}
+
+	public void transfer(TransferRequestDto transferRequestDto) {
+		if (transferRequestDto.getReceiverAccountId().equals(transferRequestDto.getSenderAccountId())) {
+			throw new IllegalArgumentException("Source and target accounts cannot be the same");
+		}
+
+		Account senderAccount = AccountConverter.convertToAccount(getById(transferRequestDto.getSenderAccountId()));
+		Account receiverAccount = AccountConverter.convertToAccount(getById(transferRequestDto.getReceiverAccountId()));
+
+		senderAccount.setBalance(senderAccount.getBalance().subtract(transferRequestDto.getAmount()));
+		receiverAccount.setBalance(receiverAccount.getBalance().add(transferRequestDto.getAmount()));
+		bankRepo.save(senderAccount);
+		bankRepo.save(receiverAccount);
+	}
+}

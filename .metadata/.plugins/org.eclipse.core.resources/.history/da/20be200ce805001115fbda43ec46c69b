@@ -1,0 +1,135 @@
+package com.bankapp.service;
+
+import java.math.BigDecimal;
+
+import org.springframework.stereotype.Service;
+
+import com.bankapp.entities.Account;
+import com.bankapp.entities.Transaction;
+import com.bankapp.enums.ApprovalStatus;
+import com.bankapp.exceptions.BankAccountNotFoundException;
+import com.bankapp.repo.AccountRepository;
+import com.bankapp.repo.TransactionRepository;
+
+import jakarta.transaction.Transactional;
+
+@Service
+@Transactional
+public class TransactionService {
+
+	private TransactionRepository transactionRepository;
+	private AccountRepository accountRepository;
+
+	public TransactionService(TransactionRepository transactionRepository, AccountRepository accountRepository) {
+		this.transactionRepository = transactionRepository;
+		this.accountRepository = accountRepository;
+	}
+
+	private void validateAmount(BigDecimal amount) {
+		if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new IllegalArgumentException("Amount must be greater than zero");
+		}
+	}
+
+	private static final BigDecimal MANAGER_APPROVAL_LIMIT = new BigDecimal("200000");
+
+	
+	public Transaction deposit(String accountId, BigDecimal amount, String clerkUserId) {
+		validateAmount(amount);
+		Account account = accountRepository.findById(accountId)
+				.orElseThrow(() -> new BankAccountNotFoundException(accountId));
+		account.credit(amount);
+
+		Transaction transaction = Transaction.createDeposit(account, amount, clerkUserId);
+
+		transactionRepository.save(transaction);
+		accountRepository.save(account);
+		return transaction;
+	}
+
+	
+	public Transaction withdraw(String accountId, BigDecimal amount, String clerkUserId) {
+		validateAmount(amount);
+		Account account = accountRepository.findById(accountId)
+				.orElseThrow(() -> new BankAccountNotFoundException(accountId));
+		Transaction transaction;
+
+		if (account.getBalance().compareTo(amount) < 0) {
+			throw new IllegalStateException("Insufficient balance");
+		}
+		boolean requiresApproval = amount.compareTo(MANAGER_APPROVAL_LIMIT) > 0;
+		if (requiresApproval) {
+			transaction = Transaction.createPendingWithdrawal(account, amount, clerkUserId);
+		} else {
+			transaction = Transaction.createApprovedWithdrawal(account, amount, clerkUserId);
+			account.debit(amount);
+			accountRepository.save(account);
+		}
+		transactionRepository.save(transaction);
+		return transaction;
+	}
+
+	
+	public void apporveWithdrawal(String transactionId, String managerId) {
+		Transaction transaction = transactionRepository.findById(transactionId)
+				.orElseThrow(() -> new IllegalArgumentException("Transaction not found"));
+
+		if (transaction.getApprovalStatus() != ApprovalStatus.PENDING_APPROVAL) {
+			throw new IllegalStateException("Transaction is not pending for approval");
+		}
+
+		Account account = transaction.getAccount();
+
+		if (account.getBalance().compareTo(transaction.getAmount()) < 0) {
+			throw new IllegalStateException("Insufficient balance");
+		}
+		transaction.approve(managerId);
+		account.debit(transaction.getAmount());
+
+		accountRepository.save(account);
+		transactionRepository.save(transaction);
+	}
+
+	
+	public void rejectWithdrawal(String transactionId, String managerId) {
+		Transaction transaction = transactionRepository.findById(transactionId)
+				.orElseThrow(() -> new IllegalArgumentException("Transaction not found"));
+
+		if (transaction.getApprovalStatus() != ApprovalStatus.PENDING_APPROVAL) {
+			throw new IllegalStateException("Transaction is not pending for approval");
+		}
+		transaction.reject(managerId);
+		transactionRepository.save(transaction);
+	}
+
+	
+	public void transfer(String senderAccountId, String receiverAccountId, BigDecimal amount, String clerkUserId) {
+	    validateAmount(amount);
+
+	    if (senderAccountId.equals(receiverAccountId)) {
+	        throw new IllegalArgumentException("Source and target accounts cannot be the same");
+	    }
+
+	    Account senderAccount = accountRepository.findById(senderAccountId)
+	            .orElseThrow(() -> new BankAccountNotFoundException(senderAccountId));
+	    Account receiverAccount = accountRepository.findById(receiverAccountId)
+	            .orElseThrow(() -> new BankAccountNotFoundException(receiverAccountId));
+
+	    if (senderAccount.getBalance().compareTo(amount) < 0) {
+	        throw new IllegalStateException("Insufficient balance in sender account");
+	    }
+
+	    senderAccount.debit(amount);
+	    receiverAccount.credit(amount);
+
+	    accountRepository.save(senderAccount);
+	    accountRepository.save(receiverAccount);
+
+	    Transaction debitTransaction = Transaction.createTransferDebit(senderAccount, amount, clerkUserId, receiverAccount.getId());
+	    Transaction creditTransaction = Transaction.createTransferCredit(receiverAccount, amount, clerkUserId, senderAccount.getId());
+
+	    transactionRepository.save(debitTransaction);
+	    transactionRepository.save(creditTransaction);
+	}
+
+}

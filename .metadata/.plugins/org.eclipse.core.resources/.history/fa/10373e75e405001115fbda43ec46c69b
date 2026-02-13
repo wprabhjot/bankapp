@@ -1,0 +1,58 @@
+package com.bankapp.service;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import javax.security.auth.login.AccountNotFoundException;
+
+import org.springframework.stereotype.Service;
+
+import com.bankapp.entities.Account;
+import com.bankapp.repo.AccountRepository;
+
+import jakarta.transaction.Transactional;
+
+@Service
+@Transactional
+public class AccountService {
+
+    private final AccountRepository accountRepository;
+
+    public AccountService(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
+
+    public Account createAccount(String name, String email, String phone, BigDecimal initialBalance) {
+
+        if (initialBalance.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Initial balance cannot be negative");
+        }
+
+        Account account = new Account(name, email, phone, initialBalance);
+        return accountRepository.save(account);
+    }
+
+    public Account updateAccountDetails(String accountId, String name, String email, String phone) {
+
+        Account account = getAccountById(accountId);
+        account.updateDetails(name, email, phone);
+        return accountRepository.save(account);
+    }
+
+    public void deleteAccount(String accountId) {
+
+        Account account = getAccountById(accountId);
+        account.close();
+        accountRepository.save(account);
+    }
+
+
+    public Account getAccountById(String accountId) {
+        return accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
+    }
+
+    public List<Account> getAllAccounts() {
+        return accountRepository.findAll();
+    }
+}

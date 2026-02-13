@@ -1,0 +1,8 @@
+package com.bankapp.exceptions;
+
+public class Snippet {
+	public static void main(String[] args) {
+		ResourceNotFoundException
+	}
+}
+

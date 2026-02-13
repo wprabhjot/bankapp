@@ -1,0 +1,15 @@
+package com.bankapp;
+@Component
+public class PasswordGenerator implements CommandLineRunner {
+
+    private final PasswordEncoder passwordEncoder;
+
+    public PasswordGenerator(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    public void run(String... args) {
+        System.out.println(passwordEncoder.encode("prabhjot123"));
+    }
+}

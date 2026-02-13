@@ -1,0 +1,30 @@
+package com.bankapp.controller;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.bankapp.dto.response.AccountResponse;
+import com.bankapp.mapper.AccountMapper;
+import com.bankapp.service.AccountService;
+
+import lombok.AllArgsConstructor;
+
+@RestController
+@RequestMapping("/api/v2/accounts")
+@AllArgsConstructor
+public class AccountController {
+	private final AccountService accountService;
+	private final AccountMapper accountMapper;
+
+	@GetMapping
+	public ResponseEntity<List<AccountResponse>> getAllAccounts() {
+		List<AccountResponse> accounts = accountService.getAllAccounts().stream().map(accountMapper::toResponse)
+				.collect(Collectors.toList());
+		return ResponseEntity.ok(accounts);
+	}
+}

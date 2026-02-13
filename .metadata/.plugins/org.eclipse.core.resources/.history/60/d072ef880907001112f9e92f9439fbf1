@@ -1,0 +1,90 @@
+package com.bankapp.mapper;
+
+import com.bankapp.dto.response.PendingApprovalResponse;
+import com.bankapp.dto.response.TransactionResponse;
+import com.bankapp.entities.Account;
+import com.bankapp.entities.Transaction;
+import javax.annotation.processing.Generated;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    date = "2026-02-10T22:41:31+0530",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.12 (Oracle Corporation)"
+)
+@Component
+public class TransactionMapperImpl implements TransactionMapper {
+
+    @Override
+    public TransactionResponse toTransactionResponse(Transaction transaction) {
+        if ( transaction == null ) {
+            return null;
+        }
+
+        TransactionResponse transactionResponse = new TransactionResponse();
+
+        transactionResponse.setId( transaction.getId() );
+        transactionResponse.setAccountId( transactionAccountId( transaction ) );
+        transactionResponse.setAccountName( transactionAccountName( transaction ) );
+        if ( transaction.getTransactionType() != null ) {
+            transactionResponse.setType( transaction.getTransactionType().name() );
+        }
+        if ( transaction.getApprovalStatus() != null ) {
+            transactionResponse.setApprovalStatus( transaction.getApprovalStatus().name() );
+        }
+        transactionResponse.setPerformedBy( transaction.getPerformedByUserId() );
+        transactionResponse.setApprovedBy( transaction.getApprovedByUserId() );
+        transactionResponse.setAmount( transaction.getAmount() );
+        transactionResponse.setCreatedAt( transaction.getCreatedAt() );
+
+        return transactionResponse;
+    }
+
+    @Override
+    public PendingApprovalResponse toPendingApprovalResponse(Transaction transaction) {
+        if ( transaction == null ) {
+            return null;
+        }
+
+        PendingApprovalResponse pendingApprovalResponse = new PendingApprovalResponse();
+
+        pendingApprovalResponse.setTransactionId( transaction.getId() );
+        pendingApprovalResponse.setAccountId( transactionAccountId( transaction ) );
+        pendingApprovalResponse.setAccountName( transactionAccountName( transaction ) );
+        pendingApprovalResponse.setAmount( transaction.getAmount() );
+        pendingApprovalResponse.setPerformedByUserId( transaction.getPerformedByUserId() );
+        pendingApprovalResponse.setCreatedAt( transaction.getCreatedAt() );
+
+        return pendingApprovalResponse;
+    }
+
+    private String transactionAccountId(Transaction transaction) {
+        if ( transaction == null ) {
+            return null;
+        }
+        Account account = transaction.getAccount();
+        if ( account == null ) {
+            return null;
+        }
+        String id = account.getId();
+        if ( id == null ) {
+            return null;
+        }
+        return id;
+    }
+
+    private String transactionAccountName(Transaction transaction) {
+        if ( transaction == null ) {
+            return null;
+        }
+        Account account = transaction.getAccount();
+        if ( account == null ) {
+            return null;
+        }
+        String name = account.getName();
+        if ( name == null ) {
+            return null;
+        }
+        return name;
+    }
+}

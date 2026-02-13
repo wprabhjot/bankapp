@@ -1,0 +1,63 @@
+package com.bankapp.controller;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import com.bankapp.dto.request.CreateUserRequest;
+import com.bankapp.dto.request.UpdateUserRequest;
+import com.bankapp.dto.response.UserResponse;
+import com.bankapp.service.UserService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequestMapping("/api/v2/users")
+@RequiredArgsConstructor
+@Validated
+public class UserController {
+
+	private final UserService userService;
+
+	@PostMapping
+	@PreAuthorize("hasRole('MANAGER')")
+	public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
+		UserResponse response = userService.createUser(request);
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
+	}
+
+	@PutMapping("/{userId}")
+	@PreAuthorize("hasRole('MANAGER')")
+	public ResponseEntity<UserResponse> updateUser(@PathVariable String userId,
+			@Valid @RequestBody UpdateUserRequest request) {
+		UserResponse response = userService.updateUser(userId, request);
+		return ResponseEntity.ok(response);
+	}
+
+	@DeleteMapping("/{userId}")
+	@PreAuthorize("hasRole('MANAGER')")
+	public ResponseEntity<Void> deactivateUser(@PathVariable String userId) {
+		userService.deactivateUser(userId);
+		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/{userId}")
+	@PreAuthorize("hasRole('MANAGER')")
+	public ResponseEntity<UserResponse> getUserById(@PathVariable String userId) {
+
+		UserResponse response = userService.getUserById(userId);
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping
+	@PreAuthorize("hasRole('MANAGER')")
+	public ResponseEntity<List<UserResponse>> getAllUsers() {
+		List<UserResponse> users = userService.getAllUsers();
+		return ResponseEntity.ok(users);
+	}
+}

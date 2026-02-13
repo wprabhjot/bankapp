@@ -1,0 +1,57 @@
+package com.bankapp.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.bankapp.entities.Account;
+import com.bankapp.entities.Transaction;
+import com.bankapp.enums.ApprovalStatus;
+import com.bankapp.repo.AccountRepository;
+import com.bankapp.repo.TransactionRepository;
+
+@Service
+public class ApprovalService {
+	private final TransactionRepository transactionRepository;
+	private final AccountRepository accountRepository;
+
+	public ApprovalService(TransactionRepository transactionRepository, AccountRepository accountRepository) {
+		this.transactionRepository = transactionRepository;
+		this.accountRepository = accountRepository;
+	}
+
+	public void apporveWithdrawal(String transactionId, String managerId) {
+		Transaction transaction = transactionRepository.findById(transactionId)
+				.orElseThrow(() -> new IllegalArgumentException("Transaction not found"));
+
+		if (transaction.getApprovalStatus() != ApprovalStatus.PENDING_APPROVAL) {
+			throw new IllegalStateException("Transaction is not pending for approval");
+		}
+
+		Account account = transaction.getAccount();
+
+		if (account.getBalance().compareTo(transaction.getAmount()) < 0) {
+			throw new IllegalStateException("Insufficient balance");
+		}
+		transaction.approve(managerId);
+		account.debit(transaction.getAmount());
+
+		accountRepository.save(account);
+		transactionRepository.save(transaction);
+	}
+
+	public void rejectWithdrawal(String transactionId, String managerId) {
+		Transaction transaction = transactionRepository.findById(transactionId)
+				.orElseThrow(() -> new IllegalArgumentException("Transaction not found"));
+
+		if (transaction.getApprovalStatus() != ApprovalStatus.PENDING_APPROVAL) {
+			throw new IllegalStateException("Transaction is not pending for approval");
+		}
+		transaction.reject(managerId);
+		transactionRepository.save(transaction);
+	}
+
+	public List<Transaction> getPendingApprovals() {
+		return transactionRepository.findByApprovalStatus(ApprovalStatus.PENDING_APPROVAL);
+	}
+}

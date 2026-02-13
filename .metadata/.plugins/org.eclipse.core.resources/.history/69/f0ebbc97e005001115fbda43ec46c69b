@@ -1,0 +1,28 @@
+@RestControllerAdvice
+public class BankAccountExceptionHandlerController {
+
+	@ExceptionHandler(BankAccountNotFoundException.class)
+	public ResponseEntity<ProblemDetail> handle404(BankAccountNotFoundException e) {
+		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+
+		problemDetail.setTitle("Account Not Found");
+		problemDetail.setDetail(e.getMessage());
+		problemDetail.setProperty("timestamp", Instant.now());
+		problemDetail.setProperty("errorCode", "NOT_FOUND");
+
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
+	}
+	
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ProblemDetail> handle500(Exception e) {
+		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+
+		problemDetail.setTitle("Internal server error");
+		problemDetail.setDetail("Please try after some time");
+		problemDetail.setProperty("timestamp", Instant.now());
+		problemDetail.setProperty("errorCode", "INTERNAL_SERVER_ERROR");
+
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail);
+	}
+
+}

@@ -1,0 +1,35 @@
+package com.bankapp.util;
+
+import com.bankapp.dto.CreateAccountRequest;
+import com.bankapp.entities.Account;
+
+public class AccountConverter {
+
+    public static CreateAccountRequest convertToAccountDto(Account account) {
+
+        if (account == null) {
+            return null;
+        }
+
+        CreateAccountRequest dto = new CreateAccountRequest();
+        dto.setId(account.getId());
+        dto.setName(account.getName());
+        dto.setBalance(account.getBalance());
+
+        return dto;
+    }
+
+    public static Account convertToAccount(CreateAccountRequest dto) {
+
+        if (dto == null) {
+            return null;
+        }
+
+        Account account = new Account();
+        account.setId(dto.getId());
+        account.setName(dto.getName());
+        account.setBalance(dto.getBalance());
+
+        return account;
+    }
+}

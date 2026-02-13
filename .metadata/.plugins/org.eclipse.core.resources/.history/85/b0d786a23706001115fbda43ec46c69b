@@ -1,0 +1,12 @@
+package com.bankapp.dto.request;
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class PendingApprovalResponse {
+    private String transactionId;
+    private String accountId;
+    private String accountName;
+    private BigDecimal amount;
+    private String performedBy;
+    private LocalDateTime createdAt;
+}

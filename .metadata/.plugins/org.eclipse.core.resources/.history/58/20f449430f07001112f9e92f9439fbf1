@@ -1,0 +1,32 @@
+package com.bankapp.controller;
+@RestController
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
+
+    @PostMapping("/authenticate")
+    public String authenticateAndGetToken(
+            @RequestBody AuthRequest authRequest) {
+
+        Authentication authentication =
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                    authRequest.getUsername(),
+                    authRequest.getPassword()
+                )
+            );
+
+        if (authentication.isAuthenticated()) {
+            return jwtService.generateToken(
+                userDetailsService.loadUserByUsername(
+                    authRequest.getUsername()
+                )
+            );
+        } else {
+            throw new UsernameNotFoundException("Invalid user");
+        }
+    }
+}

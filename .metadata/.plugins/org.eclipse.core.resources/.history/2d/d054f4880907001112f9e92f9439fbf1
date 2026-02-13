@@ -1,0 +1,53 @@
+package com.bankapp.mapper;
+
+import com.bankapp.dto.request.CreateUserRequest;
+import com.bankapp.dto.response.UserResponse;
+import com.bankapp.entities.User;
+import javax.annotation.processing.Generated;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    date = "2026-02-10T22:53:14+0530",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.43.0.v20250819-1513, environment: Java 21.0.9 (Eclipse Adoptium)"
+)
+@Component
+public class UserMapperImpl implements UserMapper {
+
+    @Override
+    public UserResponse toResponse(User user) {
+        if ( user == null ) {
+            return null;
+        }
+
+        UserResponse userResponse = new UserResponse();
+
+        userResponse.setActive( user.isActive() );
+        userResponse.setCreatedAt( user.getCreatedAt() );
+        userResponse.setFullName( user.getFullName() );
+        userResponse.setId( user.getId() );
+        userResponse.setRole( user.getRole() );
+        userResponse.setUsername( user.getUsername() );
+
+        return userResponse;
+    }
+
+    @Override
+    public User toEntity(CreateUserRequest request) {
+        if ( request == null ) {
+            return null;
+        }
+
+        User user = new User();
+
+        user.setFullName( request.getFullName() );
+        user.setPassword( request.getPassword() );
+        user.setRole( request.getRole() );
+        user.setUsername( request.getUsername() );
+
+        user.setCreatedAt( java.time.LocalDateTime.now() );
+        user.setActive( true );
+
+        return user;
+    }
+}

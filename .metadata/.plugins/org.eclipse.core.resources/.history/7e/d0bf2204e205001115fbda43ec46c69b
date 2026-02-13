@@ -1,0 +1,8 @@
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UpdateAccountNameRequest {
+
+    @NotBlank
+    private String name;
+}

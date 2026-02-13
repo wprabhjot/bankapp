@@ -1,0 +1,59 @@
+package com.bankapp.service;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.bankapp.dto.AccountDto;
+import com.bankapp.entities.Account;
+import com.bankapp.exceptions.AccountNotFoundException;
+import com.bankapp.repo.AccountRepository;
+import com.bankapp.util.AccountConverter;
+
+@Service
+public class AccountService {
+	private AccountRepository accountRepo;
+
+//	@Autowired
+	public AccountService(AccountRepository accountRepo) {
+		this.accountRepo = accountRepo;
+	}
+
+	public AccountDto createAccount(AccountDto accountDto) {
+		Account account = accountRepo.save(AccountConverter.convertToAccount(accountDto));
+		return AccountConverter.convertToAccountDto(account);
+	}
+
+	public AccountDto updateAccount(String id, AccountDto accountDto) {
+		AccountDto accountDtoToUpdate = getById(id);
+		if (accountDtoToUpdate == null)
+			throw new AccountNotFoundException("not found" + id);
+		accountDtoToUpdate.setName(accountDto.getName());
+		Account accountUpdated = accountRepo.save(AccountConverter.convertToAccount(accountDtoToUpdate));
+		return AccountConverter.convertToAccountDto(accountUpdated);
+	}
+
+	public void deleteAccount(String id) {
+		AccountDto accountDtoToDelete = getById(id);
+		if (accountDtoToDelete == null)
+			throw new AccountNotFoundException("account not found, id: " + id);
+		accountRepo.delete(AccountConverter.convertToAccount(accountDtoToDelete));
+	}
+
+	public List<AccountDto> getAllAccount() {
+		List<AccountDto> accounts = accountRepo.findAll().stream().map(AccountConverter::convertToAccountDto).toList();
+		return accounts;
+	}
+
+	public AccountDto getById(String id) {
+		Account account = accountRepo.findById(id)
+				.orElseThrow(() -> new AccountNotFoundException("account not found, id: " + id));
+		return AccountConverter.convertToAccountDto(account);
+	}
+
+	public BigDecimal getBalance(String id) {
+		AccountDto accountDto = getById(id);
+		return accountDto.getBalance();
+	}
+}

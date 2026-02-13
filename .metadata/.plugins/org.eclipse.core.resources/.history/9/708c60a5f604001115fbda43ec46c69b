@@ -1,0 +1,70 @@
+package com.bankapp.service;
+
+import java.math.BigDecimal;
+
+import org.springframework.stereotype.Service;
+
+import com.bankapp.dto.DepositRequestDto;
+import com.bankapp.dto.TransferRequestDto;
+import com.bankapp.dto.WithdrawRequestDto;
+import com.bankapp.entities.Account;
+import com.bankapp.entities.Transaction;
+import com.bankapp.enums.ApprovalStatus;
+import com.bankapp.enums.TransactionType;
+import com.bankapp.exceptions.AccountNotFoundException;
+import com.bankapp.repo.AccountRepository;
+import com.bankapp.repo.TransactionRepository;
+import com.bankapp.util.AccountConverter;
+
+import jakarta.transaction.Transactional;
+
+@Service
+public class TransactionService {
+
+	private TransactionRepository transactionRepository;
+	private AccountRepository accountRepository;
+
+	public TransactionService(TransactionRepository transactionRepository, AccountRepository accountRepository) {
+		this.transactionRepository = transactionRepository;
+		this.accountRepository = accountRepository;
+	}
+
+	@Transactional
+	public Transaction deposit(DepositRequestDto depositRequestDto) {
+		String accountId = depositRequestDto.getAccountId();
+		BigDecimal amount = depositRequestDto.getAmount();
+		Account account = accountRepository.findById(accountId)
+				.orElseThrow(() -> new AccountNotFoundException(accountId));
+		account.setBalance(account.getBalance().add(amount));
+		accountRepository.save(account);
+		Transaction transaction = new Transaction().builder().account(account).transactionType(TransactionType.DEPOSIT)
+				.approvalStatus(ApprovalStatus.APPROVED).performedByUserId(depositRequestDto.getPerformedByUserId())
+				.build();
+		transactionRepository.save(transaction);
+		return transaction;
+	}
+
+	public BigDecimal withdraw(WithdrawRequestDto withdrawRequestDto) {
+		Account account = AccountConverter.convertToAccount(getById(withdrawRequestDto.getAccountId()));
+		if (account.getBalance().compareTo(withdrawRequestDto.getAmount()) < 0) {
+			throw new IllegalArgumentException("Insufficient balance for withdrawal");
+		}
+		account.setBalance(account.getBalance().subtract(withdrawRequestDto.getAmount()));
+		bankRepo.save(account);
+		return account.getBalance();
+	}
+
+	public void transfer(TransferRequestDto transferRequestDto) {
+		if (transferRequestDto.getReceiverAccountId().equals(transferRequestDto.getSenderAccountId())) {
+			throw new IllegalArgumentException("Source and target accounts cannot be the same");
+		}
+
+		Account senderAccount = AccountConverter.convertToAccount(getById(transferRequestDto.getSenderAccountId()));
+		Account receiverAccount = AccountConverter.convertToAccount(getById(transferRequestDto.getReceiverAccountId()));
+
+		senderAccount.setBalance(senderAccount.getBalance().subtract(transferRequestDto.getAmount()));
+		receiverAccount.setBalance(receiverAccount.getBalance().add(transferRequestDto.getAmount()));
+		bankRepo.save(senderAccount);
+		bankRepo.save(receiverAccount);
+	}
+}

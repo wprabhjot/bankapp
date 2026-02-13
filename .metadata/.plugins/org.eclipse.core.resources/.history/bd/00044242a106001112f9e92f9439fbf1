@@ -1,0 +1,78 @@
+package com.bankapp.service;
+
+import java.util.List;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.bankapp.dto.request.CreateUserRequest;
+import com.bankapp.dto.request.UpdateUserRequest;
+import com.bankapp.dto.response.UserResponse;
+import com.bankapp.entities.User;
+import com.bankapp.enums.Role;
+import com.bankapp.exceptions.ResourceNotFoundException;
+import com.bankapp.mapper.UserMapper;
+import com.bankapp.repo.UserRepository;
+
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+
+@Service
+@Transactional
+@AllArgsConstructor
+public class UserService {
+
+	private final UserRepository userRepository;
+	private final UserMapper userMapper;
+	private final PasswordEncoder passwordEncoder;
+
+	public UserResponse createUser(CreateUserRequest request) {
+
+		if (userRepository.existsByUsername(request.getUsername())) {
+			throw new IllegalStateException("Username already exists");
+		}
+
+		if (request.getRole() != Role.ROLE_CLERK) {
+			throw new IllegalArgumentException("Only CLERK users can be created");
+		}
+
+		User user = userMapper.toEntity(request);
+
+		user.setPassword(request.getPassword());
+
+		User savedUser = userRepository.save(user);
+
+		return userMapper.toResponse(savedUser);
+	}
+
+	public UserResponse updateUser(String userId, UpdateUserRequest request) {
+
+		User user = getUserByIdInternal(userId);
+
+		user.setFullName(request.getFullName());
+		user.setActive(request.isActive());
+
+		User updated = userRepository.save(user);
+		return userMapper.toResponse(updated);
+	}
+
+	public UserResponse getUserById(String userId) {
+		User user = getUserByIdInternal(userId);
+		return userMapper.toResponse(user);
+	}
+
+	public List<UserResponse> getAllUsers() {
+		return userRepository.findAll().stream().map(userMapper::toResponse).toList();
+	}
+
+	public void deactivateUser(String userId) {
+		User user = getUserByIdInternal(userId);
+		user.setActive(false);
+		userRepository.save(user);
+	}
+
+	private User getUserByIdInternal(String userId) {
+		return userRepository.findById(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
+	}
+}

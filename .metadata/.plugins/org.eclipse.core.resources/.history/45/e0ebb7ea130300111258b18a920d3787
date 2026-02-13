@@ -1,0 +1,93 @@
+package com.bankapp.service;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.bankapp.dto.AccountDto;
+import com.bankapp.dto.DepositRequestDto;
+import com.bankapp.dto.TransferRequestDto;
+import com.bankapp.dto.WithdrawRequestDto;
+import com.bankapp.entities.Account;
+import com.bankapp.exceptions.AccountNotFoundException;
+import com.bankapp.repo.BankRepo;
+import com.bankapp.util.AccountConverter;
+
+import jakarta.transaction.Transactional;
+
+@Service
+@Transactional
+public class BankService {
+	private BankRepo bankRepo;
+
+//	@Autowired
+	public BankService(BankRepo bankRepo) {
+		this.bankRepo = bankRepo;
+	}
+
+	public AccountDto createAccount(AccountDto accountDto) {
+		Account account = bankRepo.save(AccountConverter.convertToAccount(accountDto));
+		return AccountConverter.convertToAccountDto(account);
+	}
+
+	public AccountDto updateAccount(String id, AccountDto accountDto) {
+		AccountDto accountDtoToUpdate = getById(id);
+		if (accountDtoToUpdate == null)
+			throw new AccountNotFoundException("not found" + id);
+		accountDtoToUpdate.setName(accountDto.getName());
+		Account accountUpdated = bankRepo.save(AccountConverter.convertToAccount(accountDtoToUpdate));
+		return AccountConverter.convertToAccountDto(accountUpdated);
+	}
+
+	public void deleteAccount(String id) {
+		AccountDto accountDtoToDelete = getById(id);
+		if (accountDtoToDelete == null)
+			throw new AccountNotFoundException("account not found, id: " + id);
+		bankRepo.delete(AccountConverter.convertToAccount(accountDtoToDelete));
+	}
+
+	public List<AccountDto> getAllAccount() {
+		List<AccountDto> accounts = bankRepo.findAll().stream().map(AccountConverter::convertToAccountDto).toList();
+		return accounts;
+	}
+
+	public AccountDto getById(String id) {
+		Account account = bankRepo.findById(id)
+				.orElseThrow(() -> new AccountNotFoundException("account not found, id: "));
+		return AccountConverter.convertToAccountDto(account);
+	}
+
+	public BigDecimal getBalance(String id) {
+		AccountDto accountDto = getById(id);
+		return accountDto.getBalance();
+	}
+
+	public BigDecimal deposit(DepositRequestDto depositRequestDto) {
+		AccountDto accountDto = getById(depositRequestDto.getAccountId());
+		Account account = AccountConverter.convertToAccount(accountDto);
+		account.setBalance(account.getBalance().add(depositRequestDto.getAmount()));
+		return account.getBalance();
+	}
+
+	public BigDecimal withdraw(WithdrawRequestDto withdrawRequestDto) {
+		Account account = AccountConverter.convertToAccount(getById(withdrawRequestDto.getAccountId()));
+		if (account.getBalance().compareTo(withdrawRequestDto.getAmount()) < 0) {
+			throw new IllegalArgumentException("Insufficient balance for withdrawal");
+		}
+		account.setBalance(account.getBalance().subtract(withdrawRequestDto.getAmount()));
+		return account.getBalance();
+	}
+
+	public void transfer(TransferRequestDto transferRequestDto) {
+		if (transferRequestDto.getReceiverAccountId().equals(transferRequestDto.getSenderAccountId())) {
+			throw new IllegalArgumentException("Source and target accounts cannot be the same");
+		}
+
+		Account senderAccount = AccountConverter.convertToAccount(getById(transferRequestDto.getSenderAccountId()));
+		Account receiverAccount = AccountConverter.convertToAccount(getById(transferRequestDto.getReceiverAccountId()));
+
+		senderAccount.setBalance(senderAccount.getBalance().subtract(transferRequestDto.getAmount()));
+		receiverAccount.setBalance(receiverAccount.getBalance().add(transferRequestDto.getAmount()));
+	}
+}

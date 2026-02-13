@@ -1,0 +1,92 @@
+package com.bankapp.service;
+
+import java.math.BigDecimal;
+
+import org.springframework.stereotype.Service;
+
+import com.bankapp.dto.DepositRequestDto;
+import com.bankapp.dto.TransferRequestDto;
+import com.bankapp.dto.WithdrawRequestDto;
+import com.bankapp.entities.Account;
+import com.bankapp.entities.Transaction;
+import com.bankapp.enums.ApprovalStatus;
+import com.bankapp.enums.TransactionType;
+import com.bankapp.exceptions.AccountNotFoundException;
+import com.bankapp.repo.AccountRepository;
+import com.bankapp.repo.TransactionRepository;
+import com.bankapp.util.AccountConverter;
+
+import jakarta.transaction.Transactional;
+
+@Service
+public class TransactionService {
+
+	private TransactionRepository transactionRepository;
+	private AccountRepository accountRepository;
+
+	public TransactionService(TransactionRepository transactionRepository, AccountRepository accountRepository) {
+		this.transactionRepository = transactionRepository;
+		this.accountRepository = accountRepository;
+	}
+
+	private void validateAmount(BigDecimal amount) {
+		if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new IllegalArgumentException("Amount must be greater than zero");
+		}
+	}
+
+	private static final BigDecimal MANAGER_APPROVAL_LIMIT = new BigDecimal("200000");
+
+	@Transactional
+	public Transaction deposit(String accountId, BigDecimal amount, String clerkUserId) {
+		validateAmount(amount);
+		Account account = accountRepository.findById(accountId)
+				.orElseThrow(() -> new AccountNotFoundException(accountId));
+		account.setBalance(account.getBalance().add(amount));
+
+		Transaction transaction = Transaction.createDeposit(account, amount, clerkUserId);
+
+		transactionRepository.save(transaction);
+		accountRepository.save(account);
+		return transaction;
+	}
+
+	@Transactional
+	public Transaction withdraw(String accountId, BigDecimal amount, String clerkUserId) {
+		validateAmount(amount);
+		Account account = accountRepository.findById(accountId)
+				.orElseThrow(() -> new AccountNotFoundException(accountId));
+		Transaction transaction;
+		
+		if (account.getBalance().compareTo(amount) < 0) {
+			throw new IllegalStateException("Insufficient balance");
+		}
+		boolean requiresApproval = amount.compareTo(MANAGER_APPROVAL_LIMIT) > 0;
+		if(requiresApproval) {
+			transaction = Transaction.createPendingWithdrawal(account, amount, clerkUserId);
+		} else {
+			transaction = Transaction.createApprovedWithdrawal(account, amount, clerkUserId);
+			account.setBalance(account.getBalance().subtract(amount));
+			accountRepository.save(account);
+		}
+		transactionRepository.save(transaction);
+		return transaction;
+	}
+	
+//	public static Transaction  apporveWithdrawal(String transactionId, String managerId) {
+//	}
+
+//	public void transfer(TransferRequestDto transferRequestDto) {
+//		if (transferRequestDto.getReceiverAccountId().equals(transferRequestDto.getSenderAccountId())) {
+//			throw new IllegalArgumentException("Source and target accounts cannot be the same");
+//		}
+//
+//		Account senderAccount = AccountConverter.convertToAccount(getById(transferRequestDto.getSenderAccountId()));
+//		Account receiverAccount = AccountConverter.convertToAccount(getById(transferRequestDto.getReceiverAccountId()));
+//
+//		senderAccount.setBalance(senderAccount.getBalance().subtract(transferRequestDto.getAmount()));
+//		receiverAccount.setBalance(receiverAccount.getBalance().add(transferRequestDto.getAmount()));
+//		bankRepo.save(senderAccount);
+//		bankRepo.save(receiverAccount);
+//	}
+}

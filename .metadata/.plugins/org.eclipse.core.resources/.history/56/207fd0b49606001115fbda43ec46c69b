@@ -1,0 +1,7 @@
+package com.bankapp.dto.request;
+@Data
+public class CreateUserRequest {
+    private String username;
+    private String password;
+    private UserRole role;
+}

@@ -1,0 +1,4 @@
+@Data
+public class UpdateUserRequest {
+    private boolean active;
+}

@@ -1,0 +1,11 @@
+package com.bankapp.dto;
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class AccountResponse {
+
+    private String id;
+    private String name;
+    private BigDecimal balance;
+    private AccountStatus status;
+}

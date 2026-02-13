@@ -1,0 +1,30 @@
+1770659306901	Rename type 'AccountNotFoundException'
+1770660364430	Rename type 'AccountDto'
+1770660757146	Delete element
+1770696610792	Rename package 'com.bankapp.dto'
+1770696645272	Delete element
+1770696647141	Delete element
+1770696653469	Move compilation unit
+1770696657431	Move compilation unit
+1770696662816	Move compilation unit
+1770696669283	Move compilation unit
+1770696672984	Move compilation unit
+1770696742283	Rename type 'CreateAccountRequest'
+1770696814202	Delete element
+1770696958161	Rename type 'WithdrawRequestDto'
+1770697024142	Rename type 'AccountRequest'
+1770697078276	Delete element
+1770697144501	Delete element
+1770697341886	Delete element
+1770706726234	Delete element
+1770712237945	Rename type 'DepositRequestDto'
+1770712364346	Rename type 'TransferRequestDto'
+1770736617405	Delete element
+1770736793102	Delete element
+1770739034130	Delete element
+1770743683111	Delete element
+1770743685633	Delete element
+1770743687654	Delete element
+1770743689584	Delete element
+1770743691525	Delete element
+1770743693174	Delete element
