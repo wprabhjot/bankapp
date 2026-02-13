@@ -1,0 +1,60 @@
+<div class="transfer-container">
+  <h2>Transfer Funds</h2>
+
+  <form [formGroup]="transferForm" (ngSubmit)="onSubmit()" class="form">
+    <!-- From Account -->
+    <div class="form-field">
+      <label for="senderAccountId" class="form-label">
+        From Account
+        <span class="required">*</span>
+      </label>
+      <select formControlName="senderAccountId" id="senderAccountId" class="form-select">
+        <option value="">-- Select Account --</option>
+        <option *ngFor="let acc of accounts" [value]="acc.id">
+          {{ acc.name }} ({{ acc.id }})
+        </option>
+      </select>
+      <div *ngIf="transferForm.get('senderAccountId')?.invalid && transferForm.get('senderAccountId')?.touched" class="form-error">
+        Sender account is required.
+      </div>
+    </div>
+
+    <!-- To Account -->
+    <div class="form-field">
+      <label for="receiverAccountId" class="form-label">
+        To Account
+        <span class="required">*</span>
+      </label>
+      <select formControlName="receiverAccountId" id="receiverAccountId" class="form-select">
+        <option value="">-- Select Account --</option>
+        <option *ngFor="let acc of accounts" [value]="acc.id">
+          {{ acc.name }} ({{ acc.id }})
+        </option>
+      </select>
+      <div *ngIf="transferForm.get('receiverAccountId')?.invalid && transferForm.get('receiverAccountId')?.touched" class="form-error">
+        Receiver account is required.
+      </div>
+    </div>
+
+    <!-- Amount -->
+    <div class="form-field">
+      <label for="amount" class="form-label">
+        Amount
+        <span class="required">*</span>
+      </label>
+      <input type="number" formControlName="amount" id="amount" class="form-input" placeholder="Enter amount" />
+      <div *ngIf="transferForm.get('amount')?.invalid && transferForm.get('amount')?.touched" class="form-error">
+        Amount is required and must be greater than 0.
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-secondary" [disabled]="isSubmitting || transferForm.invalid">
+      {{ isSubmitting ? 'Transferring…' : 'Transfer' }}
+    </button>
+  </form>
+
+  <!-- Messages -->
+  <div *ngIf="successMessage" class="state state--success success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="state state--error">{{ errorMessage }}</div>
+</div>

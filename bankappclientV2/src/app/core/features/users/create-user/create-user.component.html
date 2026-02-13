@@ -1,0 +1,47 @@
+<div class="create-user-container">
+  <h2>Create Clerk / Manager</h2>
+
+  <form [formGroup]="createUserForm" (ngSubmit)="onSubmit()" class="form">
+    <div class="form-field">
+      <label for="username" class="form-label">
+        Username
+        <span class="required">*</span>
+      </label>
+      <input id="username" class="form-input" formControlName="username" type="text" />
+    </div>
+
+    <div class="form-field">
+      <label for="password" class="form-label">
+        Password
+        <span class="required">*</span>
+      </label>
+      <input id="password" class="form-input" formControlName="password" type="password" />
+    </div>
+
+    <div class="form-field">
+      <label for="fullName" class="form-label">
+        Full Name
+        <span class="required">*</span>
+      </label>
+      <input id="fullName" class="form-input" formControlName="fullName" type="text" />
+    </div>
+
+    <div class="form-field">
+      <label for="role" class="form-label">
+        Role
+        <span class="required">*</span>
+      </label>
+      <select id="role" class="form-select" formControlName="role">
+        <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+      </select>
+      <p class="form-hint">Only managers can create or update users.</p>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="loading">Create User</button>
+    </div>
+
+    <div class="state state--success success" *ngIf="success">{{ success }}</div>
+    <div class="state state--error error" *ngIf="error">{{ error }}</div>
+  </form>
+</div>

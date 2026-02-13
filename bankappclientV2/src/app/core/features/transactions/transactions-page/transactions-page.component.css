@@ -1,0 +1,29 @@
+.transactions-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.transactions-header {
+  margin-bottom: 0.5rem;
+}
+
+.mini-navbar {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.mini-navbar .title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.mini-navbar .spacer {
+  flex: 1 1 auto;
+}
+
+.transactions-content {
+  margin-top: 1rem;
+}

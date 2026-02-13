@@ -1,0 +1,60 @@
+<nav class="topbar" *ngIf="isLoggedIn()">
+  <div class="topbar-left">
+    <span class="topbar-section-label">Overview</span>
+  </div>
+
+  <div class="topbar-center">
+    <ul class="topbar-links">
+      <li>
+        <a routerLink="/"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: true }">
+          <span class="material-icons">space_dashboard</span>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/accounts" routerLinkActive="active">
+          <span class="material-icons">account_balance</span>
+          <span>Accounts</span>
+        </a>
+      </li>
+      <li *ngIf="isLoggedIn()">
+        <a routerLink="/transactions" routerLinkActive="active">
+          <span class="material-icons">swap_horiz</span>
+          <span>Transactions</span>
+        </a>
+      </li>
+      <li *ngIf="hasRole(Role.ROLE_MANAGER)">
+        <a routerLink="/users" routerLinkActive="active">
+          <span class="material-icons">group</span>
+          <span>Users</span>
+        </a>
+      </li>
+      <li *ngIf="hasRole(Role.ROLE_MANAGER)">
+        <a routerLink="/approvals" routerLinkActive="active">
+          <span class="material-icons">pending_actions</span>
+          <span>Approvals</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="topbar-right" *ngIf="isLoggedIn()">
+    <div class="topbar-identity">
+      <span class="topbar-identity-avatar">
+        {{ (getUsername() || '?').charAt(0) | uppercase }}
+      </span>
+      <div class="topbar-identity-text">
+        <span class="topbar-identity-name">{{ getUsername() }}</span>
+        <span class="topbar-identity-role">
+          {{ hasRole(Role.ROLE_MANAGER) ? 'Manager' : 'Clerk' }}
+        </span>
+      </div>
+    </div>
+    <button class="btn btn-ghost btn-sm" (click)="logout()">
+      <span class="material-icons">logout</span>
+      <span>Logout</span>
+    </button>
+  </div>
+</nav>

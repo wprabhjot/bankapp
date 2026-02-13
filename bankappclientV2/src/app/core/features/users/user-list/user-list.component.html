@@ -1,0 +1,33 @@
+<div class="user-list-container">
+  <h2>User List</h2>
+
+  <div *ngIf="loading" class="state state--loading">Loading users…</div>
+  <div *ngIf="error" class="state state--error error">{{ error }}</div>
+
+  <table *ngIf="!loading && users.length > 0" class="table">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Full Name</th>
+        <th>Role</th>
+        <th>Created At</th>
+        <th>Active</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>{{ user.username }}</td>
+        <td>{{ user.fullName }}</td>
+        <td>{{ formatRole(user.role) }}</td>
+        <td>{{ user.createdAt | date: 'short' }}</td>
+        <td>
+          <span class="chip" [ngClass]="user.active ? 'chip--success' : 'chip--neutral'">
+            {{ user.active ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && users.length === 0" class="state state--empty">No users found.</div>
+</div>

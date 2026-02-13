@@ -1,0 +1,81 @@
+<div class="page">
+  <div class="dashboard-header">
+    <div>
+      <h1 class="page-title">Overview</h1>
+      <p class="page-subtitle">
+        High-level insight into accounts and recent transaction activity.
+      </p>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-cards">
+    <div class="stat-card">
+      <div class="stat-card-label">Total Accounts</div>
+      <div class="stat-card-value">{{ totalAccounts || 0 }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">Total Transactions</div>
+      <div class="stat-card-value">{{ totalTransactions || 0 }}</div>
+    </div>
+  </div>
+
+  <!-- Recent Transactions -->
+  <div class="card card--compact mt-6">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Recent Transactions</div>
+        <div class="card-subtitle">
+          Latest activity across managed accounts.
+        </div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="recentTransactions && recentTransactions.length > 0; else emptyState">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Account</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th class="text-right">Amount</th>
+            <th>Performed By</th>
+            <th>Approved By</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let txn of recentTransactions">
+            <td>{{ txn.id }}</td>
+            <td>{{ txn.accountName }} ({{ txn.accountId }})</td>
+            <td>{{ txn.type }}</td>
+            <td>
+              <span
+                class="chip"
+                [ngClass]="{
+                  'chip--success': txn.approvalStatus === 'APPROVED',
+                  'chip--danger': txn.approvalStatus === 'REJECTED' || txn.approvalStatus === 'FAILED',
+                  'chip--pending': txn.approvalStatus === 'PENDING',
+                  'chip--neutral': !txn.approvalStatus
+                }"
+              >
+                {{ txn.approvalStatus || 'UNKNOWN' }}
+              </span>
+            </td>
+            <td class="text-right">{{ txn.amount | currency }}</td>
+            <td>{{ txn.performedBy }}</td>
+            <td>{{ txn.approvedBy || '-' }}</td>
+            <td>{{ txn.createdAt | date:'short' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+
+    <ng-template #emptyState>
+      <div class="state state--empty">
+        No recent transactions yet. Activity will appear here once operations are recorded.
+      </div>
+    </ng-template>
+  </div>
+</div>

@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell__header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 0.85rem 2.25rem;
+  backdrop-filter: blur(18px);
+  background: linear-gradient(to right, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.82));
+  border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+}
+
+.app-shell__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.app-shell__logo-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, #e5e7eb 0, #38bdf8 30%, #2563eb 55%, #0f172a 100%);
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.55), 0 0 24px rgba(59, 130, 246, 0.85);
+}
+
+.app-shell__brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.app-shell__app-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #e5e7eb;
+}
+
+.app-shell__env-tag {
+  font-size: 0.72rem;
+  color: #9ca3af;
+}
+
+.app-shell__main {
+  flex: 1;
+  display: flex;
+}
+
+.app-shell__content-surface {
+  flex: 1;
+  padding: 1.5rem 1.75rem 2.5rem;
+}
+
+@media (max-width: 768px) {
+  .app-shell__header {
+    padding-inline: 1.25rem;
+  }
+
+  .app-shell__content-surface {
+    padding-inline: 1.125rem;
+  }
+}

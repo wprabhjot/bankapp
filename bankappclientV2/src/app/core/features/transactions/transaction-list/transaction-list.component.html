@@ -1,0 +1,63 @@
+<div class="transaction-list-container">
+  <h2>Transactions</h2>
+
+  <div class="form-field">
+    <label for="accountSelect" class="form-label">Select Account</label>
+    <select
+      id="accountSelect"
+      class="form-select"
+      [(ngModel)]="selectedAccountId"
+      (change)="onAccountChange()">
+      <option value="">-- Select an Account --</option>
+      <option *ngFor="let account of accounts" [value]="account.id">
+        {{ account.name }} ({{ account.id }})
+      </option>
+    </select>
+  </div>
+
+  <div *ngIf="loading" class="state state--loading">Loading transactions…</div>
+  <div *ngIf="errorMessage" class="state state--error">{{ errorMessage }}</div>
+
+  <table *ngIf="transactions.length > 0" class="transaction-table table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Amount</th>
+        <th>Performed By</th>
+        <th>Approved By</th>
+        <th>Account Name</th>
+        <th>Created At</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let tx of transactions">
+        <td>{{ tx.id }}</td>
+        <td>{{ tx.type }}</td>
+        <td>
+          <span
+            class="chip"
+            [ngClass]="{
+              'chip--success': tx.approvalStatus === 'APPROVED',
+              'chip--danger': tx.approvalStatus === 'REJECTED' || tx.approvalStatus === 'FAILED',
+              'chip--pending': tx.approvalStatus === 'PENDING',
+              'chip--neutral': !tx.approvalStatus
+            }"
+          >
+            {{ tx.approvalStatus || 'UNKNOWN' }}
+          </span>
+        </td>
+        <td>{{ tx.amount | currency }}</td>
+        <td>{{ tx.performedBy }}</td>
+        <td>{{ tx.approvedBy || '-' }}</td>
+        <td>{{ tx.accountName }}</td>
+        <td>{{ tx.createdAt | date:'short' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && transactions.length === 0 && selectedAccountId" class="state state--empty">
+    No transactions found for this account.
+  </div>
+</div>

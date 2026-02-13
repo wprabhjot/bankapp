@@ -1,0 +1,31 @@
+.layout-body {
+  display: flex;
+  min-height: calc(100vh - 64px);
+  position: relative;
+}
+
+/* Sidebar styles are in sidebar.component.css */
+
+.content {
+  flex: 1;
+  padding: 1.25rem 1.5rem 2.25rem;
+  background: radial-gradient(circle at top, #020617 0, #020617 32%, #000 100%);
+  transition: margin-left 0.28s ease, padding 0.2s ease;
+}
+
+.content.collapsed {
+  margin-left: 4.5rem;
+}
+
+@media (max-width: 992px) {
+  .layout-body {
+    flex-direction: column;
+  }
+
+  .content,
+  .content.collapsed {
+    margin-left: 0;
+    padding-inline: 1.1rem;
+    padding-top: 1.25rem;
+  }
+}

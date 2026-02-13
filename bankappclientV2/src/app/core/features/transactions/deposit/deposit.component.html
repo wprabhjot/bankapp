@@ -1,0 +1,44 @@
+<div class="deposit-container">
+  <h2>Deposit Funds</h2>
+
+  <form [formGroup]="depositForm" (ngSubmit)="onSubmit()" class="form">
+    <!-- Account Selection -->
+    <div class="form-field">
+      <label for="accountId" class="form-label">
+        Select Account
+        <span class="required">*</span>
+      </label>
+      <select formControlName="accountId" id="accountId" class="form-select">
+        <option value="">-- Select Account --</option>
+        <option *ngFor="let acc of accounts" [value]="acc.id">
+          {{ acc.name }} ({{ acc.id }})
+        </option>
+      </select>
+
+      <div *ngIf="depositForm.get('accountId')?.invalid && depositForm.get('accountId')?.touched" class="form-error">
+        Account is required.
+      </div>
+    </div>
+
+    <!-- Amount Input -->
+    <div class="form-field">
+      <label for="amount" class="form-label">
+        Amount
+        <span class="required">*</span>
+      </label>
+      <input type="number" formControlName="amount" id="amount" class="form-input" placeholder="Enter amount" />
+      <div *ngIf="depositForm.get('amount')?.invalid && depositForm.get('amount')?.touched" class="form-error">
+        Amount is required and must be greater than 0.
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-primary" [disabled]="isSubmitting || depositForm.invalid">
+      {{ isSubmitting ? 'Submitting…' : 'Deposit' }}
+    </button>
+  </form>
+
+  <!-- Success / Error Messages -->
+  <div *ngIf="successMessage" class="state state--success success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="state state--error">{{ errorMessage }}</div>
+</div>

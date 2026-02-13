@@ -1,0 +1,48 @@
+<div class="account-list-container">
+  <h2>Account List</h2>
+
+  <div *ngIf="isLoading" class="state state--loading">
+    Loading accounts…
+  </div>
+
+  <div *ngIf="errorMessage" class="state state--error">
+    {{ errorMessage }}
+  </div>
+
+  <table *ngIf="!isLoading && !errorMessage && accounts.length > 0" class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th class="text-right">Balance</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let account of accounts">
+        <td>{{ account.id }}</td>
+        <td>{{ account.name }}</td>
+        <td>{{ account.email }}</td>
+        <td>{{ account.phone }}</td>
+        <td class="text-right">{{ account.balance | currency }}</td>
+        <td>
+          <span
+            class="chip"
+            [ngClass]="{
+              'chip--success': account.status === 'ACTIVE',
+              'chip--neutral': account.status !== 'ACTIVE'
+            }"
+          >
+            {{ account.status }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!isLoading && !errorMessage && accounts.length === 0" class="state state--empty">
+    No accounts found. Create an account to see it listed here.
+  </div>
+</div>

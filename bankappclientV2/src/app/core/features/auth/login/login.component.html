@@ -1,0 +1,65 @@
+<div class="login-shell">
+  <div class="login-hero">
+    <div class="login-hero-pill">Secure multi-role banking workspace</div>
+    <h1>Sign in to manage accounts and operations.</h1>
+    <p>Manager and clerk access to accounts, transactions, and approvals – all in one place.</p>
+  </div>
+
+  <div class="login-card card card--compact">
+    <h2>Welcome back</h2>
+    <p class="login-subtitle">Use your assigned credentials to continue.</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()" class="form">
+      <!-- Username -->
+      <div class="form-field">
+        <label for="username" class="form-label">
+          Username
+          <span class="required">*</span>
+        </label>
+        <input
+          type="text"
+          id="username"
+          class="form-input"
+          formControlName="username"
+          placeholder="Enter your username"
+          required
+        />
+        <div class="form-error" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+          Username is required
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="form-field">
+        <label for="password" class="form-label">
+          Password
+          <span class="required">*</span>
+        </label>
+        <input
+          type="password"
+          id="password"
+          class="form-input"
+          formControlName="password"
+          placeholder="Enter your password"
+          required
+        />
+        <div class="form-error" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          Password is required
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div class="state state--error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="btn btn-primary btn-full"
+        [disabled]="loading || loginForm.invalid">
+        {{ loading ? 'Logging in…' : 'Sign in' }}
+      </button>
+    </form>
+  </div>
+</div>

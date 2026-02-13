@@ -1,0 +1,9 @@
+.transfer-container {
+  max-width: 450px;
+  margin: 20px auto;
+  padding: 4px;
+}
+
+.required {
+  color: #f97373;
+}

@@ -1,0 +1,15 @@
+.user-list-container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.error {
+  text-align: center;
+  margin-top: 10px;
+}

@@ -1,0 +1,11 @@
+.pending-approvals-container {
+  padding: 20px;
+}
+
+.approve-btn {
+  margin-right: 5px;
+}
+
+.reject-btn {
+  margin-left: 2px;
+}
