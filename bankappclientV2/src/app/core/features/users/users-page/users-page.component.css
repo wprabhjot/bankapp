@@ -1,8 +1,9 @@
-/* Main Container */
-.users-container {
+/* Page Layout */
+.users-page {
   padding: 30px;
-  background-color: #f4f6fb;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
   min-height: 100vh;
+  color: #e5e7eb;
 }
 
 /* Header */
@@ -13,83 +14,65 @@
   margin-bottom: 25px;
 }
 
-.header-left h1 {
+.page-title {
   margin: 0;
   font-size: 26px;
   font-weight: 600;
-  color: #1e293b;
+  color: #f1f5f9;
 }
 
-.header-left p {
+.page-subtitle {
   margin-top: 6px;
-  color: #64748b;
+  color: #94a3b8;
   font-size: 14px;
 }
 
 /* Manager Badge */
-.header-badge .badge {
-  background: linear-gradient(135deg, #4e73df, #224abe);
-  color: white;
+.badge {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
   padding: 8px 14px;
   font-size: 13px;
   border-radius: 20px;
   font-weight: 500;
-  box-shadow: 0 3px 8px rgba(78, 115, 223, 0.3);
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.4);
 }
 
-/* Mini Navigation */
+/* Mini Navigation (MATCHES ACCOUNTS PAGE) */
 .mini-nav {
   display: flex;
   gap: 15px;
   margin-bottom: 20px;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 2px solid rgba(30, 64, 175, 0.55);
 }
 
 .nav-tab {
   padding: 10px 18px;
   text-decoration: none;
   font-weight: 500;
-  color: #475569;
+  color: #e5e7eb;
   border-radius: 6px 6px 0 0;
   transition: all 0.2s ease-in-out;
 }
 
 .nav-tab:hover {
-  background-color: #e2e8f0;
-  color: #1e293b;
+  background-color: rgba(15, 23, 42, 0.8);
+  color: #e5e7eb;
 }
 
 .active-tab {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  background-color: rgba(15, 23, 42, 0.98);
+  border: 1px solid rgba(37, 99, 235, 0.85);
   border-bottom: none;
-  color: #4e73df;
+  color: #93c5fd;
   font-weight: 600;
 }
 
-/* Content Card */
+/* Feature Card */
 .feature-card {
-  background: #ffffff;
-  padding: 25px;
-  border-radius: 10px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  padding: 0;
   min-height: 400px;
-  transition: all 0.2s ease;
-}
-
-.feature-card:hover {
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .mini-nav {
-    flex-wrap: wrap;
-  }
+  background-color: rgba(15, 23, 42, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
 }

@@ -20,7 +20,7 @@
       <tr *ngFor="let tx of pendingApprovals">
         <td>{{ tx.transactionId }}</td>
         <td>{{ tx.accountName }}</td>
-        <td>{{ tx.amount | currency }}</td>
+        <td>{{ tx.amount | currency: 'INR' }}</td>
         <td>{{ tx.transactionType }}</td>
         <td>{{ tx.performedByUserId }}</td>
         <td>{{ tx.createdAt | date: 'short' }}</td>

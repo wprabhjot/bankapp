@@ -18,6 +18,7 @@
         <th>Phone</th>
         <th class="text-right">Balance</th>
         <th>Status</th>
+        <th class="text-right">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -26,7 +27,7 @@
         <td>{{ account.name }}</td>
         <td>{{ account.email }}</td>
         <td>{{ account.phone }}</td>
-        <td class="text-right">{{ account.balance | currency }}</td>
+        <td class="text-right">{{ account.balance | currency: 'INR' }}</td>
         <td>
           <span
             class="chip"
@@ -38,11 +39,159 @@
             {{ account.status }}
           </span>
         </td>
+        <td class="text-right">
+          <button
+            class="btn btn-secondary btn-sm"
+            type="button"
+            (click)="openTransactionsModal(account)">
+            View Transactions
+          </button>
+
+          <ng-container *ngIf="isManager">
+            <button
+              class="btn btn-ghost btn-sm"
+              type="button"
+              (click)="startEdit(account)">
+              Edit
+            </button>
+            <button
+              class="btn btn-danger btn-sm"
+              type="button"
+              (click)="deleteAccount(account)">
+              Delete
+            </button>
+          </ng-container>
+        </td>
       </tr>
     </tbody>
   </table>
 
   <div *ngIf="!isLoading && !errorMessage && accounts.length === 0" class="state state--empty">
     No accounts found. Create an account to see it listed here.
+  </div>
+
+  <!-- Edit account panel (manager only) -->
+  <div *ngIf="isManager && editingAccount" class="card card--compact mt-6">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Edit Account</div>
+        <div class="card-subtitle">
+          Update contact details for account {{ editingAccount.id }}.
+        </div>
+      </div>
+    </div>
+
+    <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="form">
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">
+            Name <span class="required">*</span>
+          </label>
+          <input formControlName="name" class="form-input" />
+          <div class="form-error" *ngIf="editForm.get('name')?.touched && editForm.get('name')?.invalid">
+            Name is required.
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Email</label>
+          <input formControlName="email" class="form-input" />
+          <div class="form-error" *ngIf="editForm.get('email')?.touched && editForm.get('email')?.errors?.['email']">
+            Enter a valid email address.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">Phone</label>
+        <input formControlName="phone" class="form-input" placeholder="10-digit phone number" />
+        <div class="form-error" *ngIf="editForm.get('phone')?.touched && editForm.get('phone')?.errors?.['pattern']">
+          Phone must be 10 digits.
+        </div>
+      </div>
+
+      <div *ngIf="editError" class="state state--error">
+        {{ editError }}
+      </div>
+
+      <div class="mt-4">
+        <button class="btn btn-primary" type="submit" [disabled]="editSubmitting || editForm.invalid">
+          Save changes
+        </button>
+        <button class="btn btn-ghost" type="button" (click)="cancelEdit()">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Transactions modal -->
+  <div class="modal-backdrop" *ngIf="showTransactionsModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <h3>Transactions for {{ modalAccount?.name }} ({{ modalAccount?.id }})</h3>
+          <p class="modal-subtitle">Read-only statement view with pagination.</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" type="button" (click)="closeTransactionsModal()">Close</button>
+      </div>
+
+      <div *ngIf="transactionsLoading" class="state state--loading">
+        Loading transactions…
+      </div>
+      <div *ngIf="transactionsError" class="state state--error">
+        {{ transactionsError }}
+      </div>
+
+      <table *ngIf="!transactionsLoading && !transactionsError && modalTransactions.length > 0" class="table mt-4">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th class="text-right">Amount</th>
+            <th>Performed By</th>
+            <th>Approved By</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tx of pagedTransactions">
+            <td>{{ tx.id }}</td>
+            <td>{{ tx.type }}</td>
+            <td>
+              <span
+                class="chip"
+                [ngClass]="{
+                  'chip--success': tx.approvalStatus === 'APPROVED',
+                  'chip--danger': tx.approvalStatus === 'REJECTED' || tx.approvalStatus === 'FAILED',
+                  'chip--pending': tx.approvalStatus === 'PENDING_APPROVAL',
+                  'chip--neutral': !tx.approvalStatus
+                }"
+              >
+                {{ tx.approvalStatus || 'UNKNOWN' }}
+              </span>
+            </td>
+            <td class="text-right">{{ tx.amount | currency: 'INR' }}</td>
+            <td>{{ tx.performedBy }}</td>
+            <td>{{ tx.approvedBy || '-' }}</td>
+            <td>{{ tx.createdAt | date: 'short' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="!transactionsLoading && !transactionsError && modalTransactions.length === 0" class="state state--empty mt-4">
+        No transactions found for this account.
+      </div>
+
+      <div class="pagination-controls" *ngIf="modalTransactions.length > txnPageSize">
+        <button class="btn btn-ghost btn-sm" type="button" (click)="goToPrevPage()" [disabled]="!hasPrevPage">
+          Previous
+        </button>
+        <span>Page {{ txnPage }}</span>
+        <button class="btn btn-ghost btn-sm" type="button" (click)="goToNextPage()" [disabled]="!hasNextPage">
+          Next
+        </button>
+      </div>
+    </div>
   </div>
 </div>

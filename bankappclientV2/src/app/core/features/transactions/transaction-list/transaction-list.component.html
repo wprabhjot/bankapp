@@ -2,23 +2,37 @@
   <h2>Transactions</h2>
 
   <div class="form-field">
-    <label for="accountSelect" class="form-label">Select Account</label>
-    <select
-      id="accountSelect"
-      class="form-select"
-      [(ngModel)]="selectedAccountId"
-      (change)="onAccountChange()">
-      <option value="">-- Select an Account --</option>
-      <option *ngFor="let account of accounts" [value]="account.id">
-        {{ account.name }} ({{ account.id }})
-      </option>
-    </select>
+    <label for="accountSelect" class="form-label">Select account</label>
+    <div class="form-row">
+      <select
+        id="accountSelect"
+        class="form-select"
+        [(ngModel)]="selectedAccountId">
+        <option value="">-- Select an Account --</option>
+        <option *ngFor="let account of accounts" [value]="account.id">
+          {{ account.name }} ({{ account.id }})
+        </option>
+      </select>
+      <button
+        class="btn btn-primary"
+        type="button"
+        (click)="loadTransactions()"
+        [disabled]="!selectedAccountId || loading">
+        View transactions
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="selectedAccountId" class="mt-4">
+    <span class="pill">
+      Viewing transactions for account: {{ selectedAccountId }}
+    </span>
   </div>
 
   <div *ngIf="loading" class="state state--loading">Loading transactions…</div>
   <div *ngIf="errorMessage" class="state state--error">{{ errorMessage }}</div>
 
-  <table *ngIf="transactions.length > 0" class="transaction-table table">
+  <table *ngIf="!loading && transactions.length > 0" class="transaction-table table mt-4">
     <thead>
       <tr>
         <th>ID</th>
@@ -32,7 +46,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let tx of transactions">
+      <tr *ngFor="let tx of pagedTransactions">
         <td>{{ tx.id }}</td>
         <td>{{ tx.type }}</td>
         <td>
@@ -41,14 +55,14 @@
             [ngClass]="{
               'chip--success': tx.approvalStatus === 'APPROVED',
               'chip--danger': tx.approvalStatus === 'REJECTED' || tx.approvalStatus === 'FAILED',
-              'chip--pending': tx.approvalStatus === 'PENDING',
+              'chip--pending': tx.approvalStatus === 'PENDING_APPROVAL',
               'chip--neutral': !tx.approvalStatus
             }"
           >
             {{ tx.approvalStatus || 'UNKNOWN' }}
           </span>
         </td>
-        <td>{{ tx.amount | currency }}</td>
+        <td>{{ tx.amount | currency: 'INR' }}</td>
         <td>{{ tx.performedBy }}</td>
         <td>{{ tx.approvedBy || '-' }}</td>
         <td>{{ tx.accountName }}</td>
@@ -57,7 +71,17 @@
     </tbody>
   </table>
 
-  <div *ngIf="!loading && transactions.length === 0 && selectedAccountId" class="state state--empty">
+  <div *ngIf="!loading && transactions.length === 0 && selectedAccountId" class="state state--empty mt-4">
     No transactions found for this account.
+  </div>
+
+  <div class="pagination-controls" *ngIf="transactions.length > pageSize">
+    <button class="btn btn-ghost btn-sm" type="button" (click)="prevPage()" [disabled]="!hasPrev">
+      Previous
+    </button>
+    <span>Page {{ page }}</span>
+    <button class="btn btn-ghost btn-sm" type="button" (click)="nextPage()" [disabled]="!hasNext">
+      Next
+    </button>
   </div>
 </div>

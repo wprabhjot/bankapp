@@ -6,7 +6,9 @@ import { AccountResponse } from '../../../models/account.model';
 import { TransferRequest } from '../../../models/transaction.model';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms'; // for [formGroup]
-import { FormsModule } from '@angular/forms';     
+import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../services/auth.service';
+import { Role } from '../../../models/user.model';
 
 @Component({
   selector: 'app-transfer',
@@ -25,7 +27,8 @@ export class TransferComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private accountService: AccountService,
-    private transactionService: TransactionService
+    private transactionService: TransactionService,
+    private authService: AuthService
   ) {
     this.transferForm = this.fb.group({
       senderAccountId: ['', Validators.required],
@@ -43,8 +46,7 @@ export class TransferComponent implements OnInit {
       next: (data) => {
         this.accounts = data;
       },
-      error: (err) => {
-        console.error(err);
+      error: () => {
         this.errorMessage = 'Failed to load accounts';
       }
     });
@@ -59,14 +61,23 @@ export class TransferComponent implements OnInit {
 
     const transfer: TransferRequest = this.transferForm.value;
 
+    const isManager = this.authService.hasRole(Role.ROLE_MANAGER);
+    const amount = transfer.amount ?? 0;
+
     this.transactionService.transfer(transfer).subscribe({
       next: (res) => {
-        this.successMessage = `Transferred ${res.amount} from account ${res.senderAccountId} to ${res.receiverAccountId} successfully!`;
+        const requiresApproval = !isManager && amount > 200000;
+
+        if (requiresApproval) {
+          this.successMessage = `Transfer of ${res.amount} from account ${res.senderAccountId} to ${res.receiverAccountId} submitted for manager approval.`;
+        } else {
+          this.successMessage = `Transferred ${res.amount} from account ${res.senderAccountId} to ${res.receiverAccountId} successfully!`;
+        }
+
         this.transferForm.reset();
         this.isSubmitting = false;
       },
-      error: (err) => {
-        console.error(err);
+      error: () => {
         this.errorMessage = 'Transfer failed. Please try again.';
         this.isSubmitting = false;
       }

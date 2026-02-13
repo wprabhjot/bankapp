@@ -41,8 +41,7 @@ export class DepositComponent implements OnInit {
       next: (data) => {
         this.accounts = data;
       },
-      error: (err) => {
-        console.error(err);
+      error: () => {
         this.errorMessage = 'Failed to load accounts';
       }
     });
@@ -63,8 +62,7 @@ export class DepositComponent implements OnInit {
         this.depositForm.reset();
         this.isSubmitting = false;
       },
-      error: (err) => {
-        console.error(err);
+      error: () => {
         this.errorMessage = 'Deposit failed. Please try again.';
         this.isSubmitting = false;
       }

@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { TransactionService } from '../../../services/transaction.service';
-import { PendingApprovalResponse } from '../../../models/approval.model';
+import { PendingApprovalResponse, ApprovalRequest } from '../../../models/approval.model';
 import { AuthService } from '../../../services/auth.service';
 import { Role } from '../../../models/user.model';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../../environments/environment';
 import { CommonModule } from '@angular/common';
+import { ApprovalService } from '../../../services/approval.service';
 
 @Component({
   selector: 'app-pending-approvals',
@@ -21,9 +19,8 @@ export class PendingApprovalsComponent implements OnInit {
   error: string | null = null;
 
   constructor(
-    private transactionService: TransactionService,
+    private approvalService: ApprovalService,
     private authService: AuthService,
-    private http: HttpClient
   ) { }
 
   ngOnInit(): void {
@@ -36,7 +33,7 @@ export class PendingApprovalsComponent implements OnInit {
 
   fetchPendingApprovals(): void {
     this.loading = true;
-    this.transactionService.getPendingApprovals().subscribe({
+    this.approvalService.getPendingApprovals().subscribe({
       next: (data) => {
         this.pendingApprovals = data;
         this.loading = false;
@@ -49,16 +46,22 @@ export class PendingApprovalsComponent implements OnInit {
   }
 
   approve(transactionId: string): void {
-    this.http.post(`${environment.apiUrl}/approvals/approve`, { transactionId }).subscribe({
+    const payload: ApprovalRequest = { transactionId };
+    this.approvalService.approve(payload).subscribe({
       next: () => this.removeTransactionFromList(transactionId),
-      error: () => alert('Failed to approve transaction')
+      error: () => {
+        this.error = 'Failed to approve transaction';
+      }
     });
   }
 
   reject(transactionId: string): void {
-    this.http.post(`${environment.apiUrl}/approvals/reject`, { transactionId }).subscribe({
+    const payload: ApprovalRequest = { transactionId };
+    this.approvalService.reject(payload).subscribe({
       next: () => this.removeTransactionFromList(transactionId),
-      error: () => alert('Failed to reject transaction')
+      error: () => {
+        this.error = 'Failed to reject transaction';
+      }
     });
   }
 

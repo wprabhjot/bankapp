@@ -1,7 +1,7 @@
 <div class="page">
   <div class="dashboard-header">
     <div>
-      <h1 class="page-title">Overview</h1>
+      <!-- <h1 class="page-title">Overview</h1> -->
       <p class="page-subtitle">
         High-level insight into accounts and recent transaction activity.
       </p>
@@ -31,7 +31,19 @@
       </div>
     </div>
 
-    <ng-container *ngIf="recentTransactions && recentTransactions.length > 0; else emptyState">
+    <ng-container *ngIf="loadingTransactions">
+      <div class="state state--loading">
+        Loading recent transactions…
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="!loadingTransactions && transactionsError">
+      <div class="state state--error">
+        {{ transactionsError }}
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="!loadingTransactions && !transactionsError && recentTransactions && recentTransactions.length > 0; else emptyState">
       <table class="table">
         <thead>
           <tr>
@@ -63,7 +75,7 @@
                 {{ txn.approvalStatus || 'UNKNOWN' }}
               </span>
             </td>
-            <td class="text-right">{{ txn.amount | currency }}</td>
+            <td class="text-right">{{ txn.amount | currency: 'INR' }}</td>
             <td>{{ txn.performedBy }}</td>
             <td>{{ txn.approvedBy || '-' }}</td>
             <td>{{ txn.createdAt | date:'short' }}</td>

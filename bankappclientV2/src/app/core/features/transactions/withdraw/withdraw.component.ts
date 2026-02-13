@@ -43,8 +43,7 @@ export class WithdrawComponent implements OnInit {
       next: (data) => {
         this.accounts = data;
       },
-      error: (err) => {
-        console.error(err);
+      error: () => {
         this.errorMessage = 'Failed to load accounts';
       }
     });
@@ -61,12 +60,15 @@ export class WithdrawComponent implements OnInit {
 
     this.transactionService.withdraw(withdraw).subscribe({
       next: (res) => {
-        this.successMessage = `Withdrawal of ${res.amount} from account ${res.accountId} successful!`;
+        if (res.approvalStatus === 'PENDING_APPROVAL') {
+          this.successMessage = `Withdrawal of ${res.amount} from account ${res.accountId} submitted for manager approval.`;
+        } else {
+          this.successMessage = `Withdrawal of ${res.amount} from account ${res.accountId} successful!`;
+        }
         this.withdrawForm.reset();
         this.isSubmitting = false;
       },
-      error: (err) => {
-        console.error(err);
+      error: () => {
         this.errorMessage = 'Withdrawal failed. Please try again.';
         this.isSubmitting = false;
       }

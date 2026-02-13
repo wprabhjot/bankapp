@@ -16,6 +16,8 @@ import { LayoutComponent } from './core/features/layout/layout.component';
 import { AccountsPageComponent } from './core/features/accounts/accounts-page/accounts-page.component';
 import { UsersPageComponent } from './core/features/users/users-page/users-page.component';
 import { TransactionsPageComponent } from './core/features/transactions/transactions-page/transactions-page.component';
+import { Role } from './core/models/user.model';
+import { ApprovalsPageComponent } from './core/features/approvals/approvals-page/approvals-page.component';
 
 export const routes: Routes = [
 
@@ -41,7 +43,11 @@ export const routes: Routes = [
         path: 'accounts',
         component: AccountsPageComponent,
         children: [
-          { path: 'create', component: CreateAccountComponent },
+          {
+            path: 'create',
+            component: CreateAccountComponent,
+            data: { roles: [Role.ROLE_MANAGER] }
+          },
           { path: 'list', component: AccountListComponent },
           { path: '', redirectTo: 'list', pathMatch: 'full' }
         ]
@@ -56,7 +62,11 @@ export const routes: Routes = [
           { path: 'withdraw', component: WithdrawComponent },
           { path: 'transfer', component: TransferComponent },
           { path: 'list', component: TransactionListComponent },
-          { path: 'pending-approvals', component: PendingApprovalsComponent },
+          {
+            path: 'pending-approvals',
+            component: PendingApprovalsComponent,
+            data: { roles: [Role.ROLE_MANAGER] }
+          },
           { path: '', redirectTo: 'list', pathMatch: 'full' }
         ]
       },
@@ -65,11 +75,19 @@ export const routes: Routes = [
       {
         path: 'users',
         component: UsersPageComponent,
+        data: { roles: [Role.ROLE_MANAGER] },
         children: [
           { path: 'create', component: CreateUserComponent },
           { path: 'list', component: UserListComponent },
           { path: '', redirectTo: 'list', pathMatch: 'full' }
         ]
+      },
+
+      // Approvals (manager only)
+      {
+        path: 'approvals',
+        component: ApprovalsPageComponent,
+        data: { roles: [Role.ROLE_MANAGER] }
       }
 
     ]

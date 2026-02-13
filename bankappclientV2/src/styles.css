@@ -143,6 +143,7 @@ body {
   border: 1px solid rgba(148, 163, 184, 0.28);
   box-shadow: var(--shadow-soft);
   padding: var(--space-5);
+  color: #fff;
 }
 
 .card--compact {
@@ -328,6 +329,16 @@ select {
   border-bottom: 1px solid rgba(31, 41, 55, 0.9);
 }
 
+.table tbody tr:nth-child(even) {
+  background-color: #000;   /* black row */
+  color: #fff;              /* light text */
+}
+
+.table tbody tr:nth-child(even) td {
+  color: #fff;
+}
+
+
 .table th {
   font-weight: 500;
   color: var(--color-text-soft);
@@ -374,7 +385,7 @@ select {
 
 .chip--neutral {
   background: rgba(148, 163, 184, 0.24);
-  color: #e5e7eb;
+  color: #c04a26;
 }
 
 /* Generic state blocks */
